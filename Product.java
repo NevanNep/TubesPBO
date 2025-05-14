@@ -25,6 +25,5 @@ public class Mahasiswa {
 
     public void displayMahasiswa() {
         System.out.println("Nama: " + nama);
-        System.out.println("Prodi: " + prodi.getNama());
     }
 }

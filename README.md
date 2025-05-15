@@ -14,7 +14,7 @@ Dirancang untuk memberikan pengalaman berbelanja parfum yang **mudah**, **elegan
 
 | **Method** | **Endpoint**       | **Deskripsi**           | **Request Body (JSON)**                                                                 | **Response**                                      | **Notes**                     |
 |------------|--------------------|-------------------------|----------------------------------------------------------------------------------------|--------------------------------------------------|--------------------------------|
-| POST       | `/users/register`  | Register user baru      | `{ "nama": "string", "email": "string", "password": "string", "alamat": "string" }`    | User object lengkap (JSON) yang baru dibuat      | Registrasi user baru          |
-| POST       | `/users/login`     | Login user              | `{ "email": "string", "password": "string" }`                                          | `"Login Berhasil"` atau `"Login Gagal"`          | Validasi email & password     |
+| POST       | `/api/users/register`  | Register user baru      | `{ "nama": "string", "email": "string", "password": "string", "alamat": "string" }`    | User object lengkap (JSON) yang baru dibuat      | Registrasi user baru          |
+| POST       | `/api/users/login`     | Login user              | `{ "email": "string", "password": "string" }`                                          | `"Login Berhasil"` atau `"Login Gagal"`          | Validasi email & password     |
 
 

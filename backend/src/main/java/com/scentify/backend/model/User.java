@@ -1,3 +1,4 @@
+package com.scentify.backend.model;
 public class User implements Loginable {
 
 

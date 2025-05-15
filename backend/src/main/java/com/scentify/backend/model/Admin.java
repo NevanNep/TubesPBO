@@ -1,3 +1,4 @@
+package com.scentify.backend.model;
 public class Admin extends User{
 
     public Admin(String id, String nama, String email, String password, String alamat) {

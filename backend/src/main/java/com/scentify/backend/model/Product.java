@@ -1,3 +1,4 @@
+package com.scentify.backend.model;
 import java.util.ArrayList;
 import java.util.List;
 

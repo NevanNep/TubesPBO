@@ -1,8 +1,13 @@
 package com.scentify.backend.model;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "users") // Opsional, sesuai nama tabel di DB
 public class User implements Loginable {
 
-
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nama;
     private String email;
@@ -13,7 +18,7 @@ public class User implements Loginable {
         // constructor kosong diperlukan oleh JPA
     }
 
-    public User(String id, String nama, String email, String password, String alamat) {
+    public User(Long id, String nama, String email, String password, String alamat) {
         this.id = id;
         this.nama = nama;
         this.email = email;
@@ -32,8 +37,8 @@ public class User implements Loginable {
     }
 
     // Getter dan Setter
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getNama() { return nama; }
     public void setNama(String nama) { this.nama = nama; }

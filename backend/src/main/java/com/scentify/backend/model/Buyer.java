@@ -6,7 +6,7 @@ public class Buyer extends User{
     private List<String> cart = new ArrayList<>();
 
 
-    public Buyer(String id, String nama, String email, String password, String alamat) {
+    public Buyer(Long id, String nama, String email, String password, String alamat) {
         super(id, nama, email, password, alamat);
     }
 

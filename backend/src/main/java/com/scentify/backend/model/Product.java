@@ -9,7 +9,7 @@ public class Product {
     private double price;
     private int stock;
     private Category category;
-    private List<Review> reviews;
+    private List<review> reviews;
 
     public Product(String productId, String nama, String brand, double price, int stock, Category category) {
         this.productId = productId;
@@ -58,7 +58,7 @@ public class Product {
         return category;
     }
 
-    public List<Review> getReviews() {
+    public List<review> getReviews() {
         return reviews;
     }
 
@@ -93,7 +93,7 @@ public class Product {
         return result;
     }
 
-    public void addReview(Review review) {
+    public void addReview(review review) {
         reviews.add(review);
     }
 }

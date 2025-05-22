@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 <template>
   <div>
     <h2>Daftar Akun Baru</h2>
@@ -68,3 +70,4 @@ button {
   cursor: pointer;
 }
 </style>
+>>>>>>> 3576f057c0940399fed8de4e19b0c938c3410668

@@ -12,7 +12,7 @@
 
 <script>
 import ProductList from './components/ProductList.vue';
-import Cart from './components/Cart.vue';
+import Cart from './components/CartPage.vue';
 
 export default {
   name: 'App',

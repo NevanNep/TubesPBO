@@ -9,7 +9,7 @@ public class Product {
     private double price;
     private int stock;
     private Category category;
-    private List<Review> reviews;
+    private List<review> reviews;
 
     public Product(String productId, String nama, String brand, double price, int stock, Category category) {
         this.productId = productId;

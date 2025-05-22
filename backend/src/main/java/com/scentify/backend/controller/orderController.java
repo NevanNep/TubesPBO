@@ -1,7 +1,7 @@
 package com.scentify.backend.controller;
 
 import com.scentify.backend.model.Order;
-import com.scentify.backend.service.OrderService;
+import com.scentify.backend.service.orderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +10,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-public class OrderController {
+public class orderController {
 
     @Autowired
-    private OrderService orderService;
+    private orderService orderService;
 
     // Get all orders
     @GetMapping

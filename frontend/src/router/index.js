@@ -6,6 +6,7 @@ import PaymentPage from '../components/PaymentPage.vue'; // Halaman pembayaran
 import LoginPage from '../components/LoginPage.vue'; // Halaman login
 import RegisterPage from '../components/RegisterPage.vue'; // Halaman register
 import ReviewPage from '@/components/ReviewPage.vue';
+import ProductList from './components/ProductList.vue';
 
 const routes = [
   { path: '/', component: MenuPage },
@@ -14,7 +15,8 @@ const routes = [
   { path: '/payment', component: PaymentPage },
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
-  { path: '/review', component: ReviewPage }
+  { path: '/review', component: ReviewPage },
+  { path: '/product/:id', component: ProductList }
 ];
 
 const router = createRouter({

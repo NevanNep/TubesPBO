@@ -1,69 +1,68 @@
 <template>
-  <div>
-    <!-- Header -->
-    <header class="bg-red-700 text-white py-3">
-      <div class="container d-flex justify-content-between align-items-center">
-        <h1 class="h3">SCENTIFY</h1>
-        <!-- Dropdown Kategori Parfum -->
-        <div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Dropdown button
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Parfum Pria</a></li>
-    <li><a class="dropdown-item" href="#">Parfum Wanita action</a></li>
-    <li><a class="dropdown-item" href="#">Something else here</a></li>
-  </ul>
-</div>
-        <div>
-          <router-link to="/login" class="text-white mx-3">Login</router-link>
-          <router-link to="/register" class="text-white mx-3">Register</router-link>
-        </div>
-      </div>
-    </header>
-
-    <!-- Konten Halaman -->
-    <router-view></router-view>
-
-    <!-- Footer -->
-    <footer class="bg-red-700 text-white py-4 mt-5">
-      <div class="container text-center">
-        <p>&copy; 2025 SCENTIFY - All Rights Reserved</p>
-        <div>
-          <a href="#" class="text-white mx-3">Contact</a>
-          <a href="#" class="text-white mx-3">About</a>
-          <a href="#" class="text-white mx-3">Terms</a>
-        </div>
-        <div class="mt-2">
-          <a href="#" class="text-white mx-3"><i class="bi bi-facebook"></i> Facebook</a>
-          <a href="#" class="text-white mx-3"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-        </div>
-      </div>
-    </footer>
+  <div id="app">
+    <h1>Pilih Parfum Favoritmu</h1>
+    <div class="tabs">
+      <button @click="selectCategory('woman')">Parfum Wanita</button>
+      <button @click="selectCategory('man')">Parfum Pria</button>
+    </div>
+    <ProductList :category="selectedCategory" @add-to-cart="addToCart"/>
+    <Cart :cart="cart"/>
   </div>
 </template>
 
 <script>
+import ProductList from './components/ProductList.vue';
+import Cart from './components/CartPage.vue';
+
 export default {
   name: 'App',
+  components: {
+    ProductList,
+    Cart
+  },
+  data() {
+    return {
+      selectedCategory: 'woman',  // default to 'woman'
+      cart: JSON.parse(localStorage.getItem('cartItems')) || [],
+    };
+  },
+  methods: {
+    selectCategory(category) {
+      this.selectedCategory = category;
+    },
+    addToCart(product) {
+      const existingItem = this.cart.find(item => item.id === product.id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        product.quantity = 1;
+        this.cart.push(product);
+      }
+      localStorage.setItem('cartItems', JSON.stringify(this.cart)); // Store in localStorage
+    }
+  }
 };
 </script>
 
-<style scoped>
-.bg-red-700 {
-  background-color: #66bcf1;
+<style>
+/* Basic styles for layout */
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.text-white {
-  color: white;
+.tabs {
+  margin: 10px;
 }
 
-.text-white:hover {
-  color: #151010;
+button {
+  padding: 10px;
+  margin: 5px;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+h1 {
+  font-size: 24px;
+  font-weight: bold;
 }
 </style>

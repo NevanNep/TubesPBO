@@ -2,7 +2,7 @@ package com.scentify.backend.model;
 
 import java.util.Date;
 
-public class Review {
+public class review {
 
     private String reviewId;
     private Buyer buyer;
@@ -10,17 +10,20 @@ public class Review {
     private int rating;
     private String comment;
     private Date createdAt;
+    private String user;
+    private String productName;
+    private String userName;    
 
-    public Review() {
+    public review() {
     }
 
-    public Review(String reviewId, Buyer buyer, Product product, int rating, String comment, Date createdAt) {
+    public review(String reviewId, Buyer buyer, Product product, int rating, String comment, Date createdAt) {
         this.reviewId = reviewId;
         this.buyer = buyer;
         this.product = product;
         this.rating = rating;
         this.comment = comment;
-        this.createdAt = createdAt;
+        this.createdAt = createdAt;  
     }
 
     public String getReviewId() {
@@ -40,7 +43,7 @@ public class Review {
     }
 
     public Product getProduct() {
-        return product;
+        return this.product;
     }
 
     public void setProduct(Product product) {
@@ -71,11 +74,21 @@ public class Review {
         this.createdAt = createdAt;
     }
 
-    public String getReviewInfo() {
-        return "Review ID: " + reviewId + "\n" +
-               "Rating: " + rating + "\n" +
-               "Review: " + review + "\n" +
-               "Product: " + (product != null ? product.getProductName() : "N/A") + "\n" +
-               "User: " + (user != null ? user.getUsername() : "N/A");
+    public String getProductName() {
+        return productName;
     }
+
+    public String getUsername() {
+        return userName;
+    }
+
+
+    public String getReviewInfo() {
+    return "Review ID: " + reviewId + "\n" +
+           "Rating: " + rating + "\n" +
+           "Review: " + comment + "\n" +
+           "Product: " + (product != null ? product.toString() : "N/A") + "\n" +
+           "User: " + (user != null ? user.toString() : "N/A");
+    }
+
 }

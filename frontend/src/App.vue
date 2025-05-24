@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import ProductList from './components/ProductList.vue';
-import Cart from './components/Cart.vue';
+import ProductList from './components/ProductDetail.vue';
+import Cart from './components/CartPage.vue';
 
 export default {
   name: 'App',

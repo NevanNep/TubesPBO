@@ -31,19 +31,21 @@
 
     <!-- Review Produk -->
     <div class="mt-5">
-      <h4 class="section-title">Review Produk</h4>
+      <h5 class="fw-bold border-bottom pb-2 mb-3">Review Produk</h5>
       <div v-if="reviews.length === 0" class="text-muted fst-italic">Belum ada review.</div>
-      <div v-else class="list-group mt-3">
+      <div v-else class="d-flex flex-column gap-3">
         <div
           v-for="(review, index) in reviews"
           :key="index"
-          class="list-group-item"
+          class="review-box border rounded p-3"
         >
-          <div class="d-flex justify-content-between">
-            <strong>{{ review.user }}</strong>
-            <span class="text-warning"><i class="bi bi-star-fill"></i> {{ review.rating }}/5</span>
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-semibold">{{ review.user }}</span>
+            <span class="text-warning small">
+              <i class="bi bi-star-fill"></i> {{ review.rating }}/5
+            </span>
           </div>
-          <p class="mb-0">{{ review.text }}</p>
+          <p class="mb-0 text-muted">"{{ review.text }}"</p>
         </div>
       </div>
     </div>
@@ -61,7 +63,7 @@ export default {
           price: 3000000,
           description: 'Parfum elegan dengan aroma floral dan sentuhan jasmine.',
           image: '/images/parfumeMissDior.jpg',
-          stock: 5,
+          stock: 0, // stok 0 agar tombol dinonaktifkan
         },
         {
           id: 2,
@@ -77,16 +79,11 @@ export default {
           price: 3200000,
           description: 'Parfum klasik dengan kombinasi floral dan aldehyde.',
           image: '/images/parfumeChanelNo5.jpg',
-          stock: 0, // Stok 0
+          stock: 3,
         },
       ],
       product: {},
       reviews: [],
-      newReview: {
-        user: '',
-        rating: '',
-        text: '',
-      },
     };
   },
   methods: {
@@ -105,8 +102,8 @@ export default {
       }
 
       const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
-      const existingIndex = cart.findIndex(p => p.id === this.product.id);
 
+      const existingIndex = cart.findIndex(p => p.id === this.product.id);
       if (existingIndex !== -1) {
         cart[existingIndex].quantity += 1;
       } else {
@@ -136,12 +133,6 @@ export default {
       }
     },
 
-    submitReview() {
-      this.reviews.push({ ...this.newReview });
-      this.newReview = { user: '', rating: '', text: '' };
-      alert('Ulasan berhasil dikirim!');
-    },
-
     generateSampleReviews() {
       return [
         { user: 'Ayu', rating: 5, text: 'Wangi elegan dan tahan lama.' },
@@ -159,8 +150,17 @@ export default {
 
 <style scoped>
 .product-image {
-  max-height: 400px;
+  max-height: 350px;
   object-fit: contain;
 }
-</style>
 
+.review-box {
+  background-color: #fafafa;
+  border-color: #e0e0e0;
+  transition: background 0.2s ease;
+}
+
+.review-box:hover {
+  background-color: #f5f5f5;
+}
+</style>

@@ -3,6 +3,7 @@
     <h2 class="mb-4 text-center fw-bold section-title">Pembayaran</h2>
 
     <form @submit.prevent="processPayment" v-if="!paymentSuccess" class="card p-4 shadow-sm border-0">
+      <!-- Pilih Metode Pembayaran -->
       <div class="mb-3">
         <label for="paymentMethod" class="form-label fw-semibold">Metode Pembayaran:</label>
         <div class="input-group">
@@ -22,6 +23,19 @@
         </div>
       </div>
 
+      <!-- Jika Transfer Bank, tampilkan daftar bank -->
+      <div v-if="paymentMethod === 'bank-transfer'" class="mb-3">
+        <label for="selectedBank" class="form-label fw-semibold">Pilih Bank:</label>
+        <select id="selectedBank" v-model="selectedBank" class="form-select" required>
+          <option disabled value="">-- Pilih Bank --</option>
+          <option value="BCA">Bank BCA</option>
+          <option value="BNI">Bank BNI</option>
+          <option value="Mandiri">Bank Mandiri</option>
+          <option value="BRI">Bank BRI</option>
+        </select>
+      </div>
+
+      <!-- Alamat Pengiriman -->
       <div class="mb-3">
         <label for="shippingAddress" class="form-label fw-semibold">Alamat Pengiriman:</label>
         <textarea
@@ -34,12 +48,19 @@
         ></textarea>
       </div>
 
-      <button type="submit" class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2" :disabled="loading">
+      <!-- Tombol Konfirmasi -->
+      <button
+        type="submit"
+        class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2"
+        :disabled="loading || (paymentMethod === 'bank-transfer' && !selectedBank)"
+        :title="loading ? 'Sedang diproses...' : 'Lanjutkan Pembayaran'"
+      >
         <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         {{ loading ? 'Memproses Pembayaran...' : 'Konfirmasi Pembayaran' }}
       </button>
     </form>
 
+    <!-- Transisi setelah sukses -->
     <transition name="fade">
       <div v-if="paymentSuccess" class="text-center mt-5 p-4 shadow rounded bg-white">
         <h3 class="text-success fw-bold mb-3">✅ Terima kasih telah membeli produk!</h3>
@@ -60,6 +81,7 @@ export default {
   data() {
     return {
       paymentMethod: 'credit-card',
+      selectedBank: '', // Tambahan untuk pilihan bank
       shippingAddress: '',
       paymentSuccess: false,
       loading: false,

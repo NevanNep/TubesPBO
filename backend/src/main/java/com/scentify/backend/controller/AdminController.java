@@ -23,12 +23,12 @@ public class AdminController {
 
     @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
-        return ResponseEntity.ok(adminService.updateProduct(id, updatedProduct));
+        return ResponseEntity.ok(adminService.updateProduct(String.valueOf(id), updatedProduct));
     }
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
-        adminService.deleteProduct(id);
+        adminService.deleteProduct(String.valueOf(id));
         return ResponseEntity.ok("Product deleted");
     }
 

@@ -7,17 +7,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface reviewRepository extends JpaRepository<review, String> {
-    
+public interface reviewRepository extends JpaRepository<review, Long> {
+
     // Cari semua review berdasarkan ID produk
     List<review> findByProduct_ProductId(String productId);
 
-    // Cari semua review berdasarkan ID buyer
-    List<review> findByBuyer_BuyerId(String buyerId);
+    // Cari semua review berdasarkan ID buyer (ubah ke field `id` karena Buyer mewarisi dari User)
+    List<review> findByBuyer_Id(Long id);
 
     // Cari semua review berdasarkan rating
     List<review> findByRating(int rating);
-    
+
     // Optional: cari review berdasarkan username
     List<review> findByUserName(String userName);
 }

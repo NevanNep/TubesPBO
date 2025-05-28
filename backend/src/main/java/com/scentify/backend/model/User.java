@@ -2,7 +2,9 @@ package com.scentify.backend.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users") // Opsional, sesuai nama tabel di DB
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 public class User implements Loginable {
 
     @Id

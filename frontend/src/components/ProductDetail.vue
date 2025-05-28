@@ -54,14 +54,32 @@
 export default {
   data() {
     return {
-      defaultProduct: {
-        id: 1,
-        name: 'Miss Dior',
-        price: 3000000,
-        description: 'Parfum elegan dengan aroma floral dan sentuhan jasmine.',
-        image: '/images/parfumeMissDior.jpg',
-        stock: 5,
-      },
+      products: [
+        {
+          id: 1,
+          name: 'Miss Dior',
+          price: 3000000,
+          description: 'Parfum elegan dengan aroma floral dan sentuhan jasmine.',
+          image: '/images/parfumeMissDior.jpg',
+          stock: 5,
+        },
+        {
+          id: 2,
+          name: 'Dior Sauvage',
+          price: 2700000,
+          description: 'Aroma maskulin dengan wangi citrus dan amberwood.',
+          image: '/images/Sauvage.jpg',
+          stock: 8,
+        },
+        {
+          id: 3,
+          name: 'Chanel No. 5',
+          price: 3200000,
+          description: 'Parfum klasik dengan kombinasi floral dan aldehyde.',
+          image: '/images/parfumeChanelNo5.jpg',
+          stock: 3,
+        },
+      ],
       product: {},
       reviews: [],
       newReview: {
@@ -73,6 +91,14 @@ export default {
   },
   methods: {
     addToCart() {
+       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
+    if (!loggedInUser) {
+      alert('Silakan login terlebih dahulu untuk membeli produk.');
+    this.$router.push('/login');
+      return;
+    }
+
       if (this.product.stock === 0) {
         alert('Maaf, produk ini sedang habis stok.');
         return;
@@ -89,7 +115,6 @@ export default {
 
       localStorage.setItem('cartItems', JSON.stringify(cart));
 
-      // Kurangi stok dan simpan ulang
       this.product.stock -= 1;
       this.saveProductStock();
 
@@ -103,8 +128,16 @@ export default {
     },
 
     loadProduct() {
+      const id = parseInt(this.$route.params.id);
       let storedProducts = JSON.parse(localStorage.getItem('products')) || {};
-      this.product = storedProducts[this.defaultProduct.id] || { ...this.defaultProduct };
+
+      // Jika produk sudah pernah disimpan ke localStorage (karena perubahan stok, dll)
+      if (storedProducts[id]) {
+        this.product = storedProducts[id];
+      } else {
+        // Ambil dari daftar default
+        this.product = this.products.find(p => p.id === id) || this.products[0];
+      }
     },
 
     submitReview() {
@@ -119,7 +152,7 @@ export default {
         { user: 'Rani', rating: 4, text: 'Suka aromanya, cocok dipakai malam hari.' },
         { user: 'Dina', rating: 5, text: 'Perfume favoritku sejauh ini!' },
       ];
-    }
+    },
   },
   created() {
     this.loadProduct();
@@ -127,25 +160,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
-
-.product-image {
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 12px;
-  transition: transform 0.3s ease;
-}
-.product-image:hover {
-  transform: scale(1.03);
-}
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem;
-  color: #000000;
-  border-left: 5px solid #000000;
-  padding-left: 12px;
-  margin-bottom: 1rem;
-}
-</style>

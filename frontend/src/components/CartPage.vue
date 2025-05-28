@@ -101,17 +101,25 @@ export default {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
       this.cartItems = cartItems;
     },
-    goToPayment() {
-      if(this.selectedItems.length > 0){
-        this.$router.push({
-          path: '/payment',
-          query: { items: this.selectedItems.join(',') }
-        });
-      } else {
-        alert('Silakan pilih produk yang ingin dibeli!');
-      }
+     goToPayment() {
+    // Cek login dulu
+    const user = localStorage.getItem('user');
+    if (!user) {
+      alert('Silakan login terlebih dahulu sebelum melanjutkan pembayaran.');
+      this.$router.push('/login');
+      return;
+    }
+    // Kalau sudah login, lanjut ke halaman payment
+    if (this.selectedItems.length > 0) {
+      this.$router.push({
+        path: '/payment',
+        query: { items: this.selectedItems.join(',') }
+      });
+    } else {
+      alert('Silakan pilih produk yang ingin dibeli!');
     }
   }
+}
 };
 </script>
 

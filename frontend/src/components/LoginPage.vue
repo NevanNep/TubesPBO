@@ -53,15 +53,19 @@ export default {
   },
   methods: {
     login() {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
+  const storedUser = JSON.parse(localStorage.getItem('user'));
 
-      if (storedUser && storedUser.email === this.email && storedUser.password === this.password) {
-        alert('Login berhasil!');
-        this.$router.push('/'); // Redirect ke homepage setelah login berhasil
-      } else {
-        alert('Email atau password salah.');
-      }
-    },
+  if (storedUser && storedUser.email === this.email && storedUser.password === this.password) {
+    alert('Login berhasil!');
+
+    // Simpan status login
+    localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+
+    this.$router.push('/'); // Redirect ke homepage
+  } else {
+    alert('Email atau password salah.');
+  }
+}
   },
 };
 </script>

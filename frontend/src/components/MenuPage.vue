@@ -74,7 +74,7 @@ export default {
           name: 'Miss Dior',
           price: 3000000,
           description: 'A timeless floral fragrance with aldehydes and jasmine notes.',
-          image: 'images/OIP.jpg',
+          image: 'images/parfumeMissDior.jpg',
           category: 'women',
         },
         {
@@ -82,7 +82,7 @@ export default {
           name: 'Dior Sauvage',
           price: 2500000,
           description: 'A bold fragrance with notes of bergamot, pepper, and ambroxan.',
-          image: 'images/parfumeSauvageDior.jpg',
+          image: 'images/Sauvage.jpg',
           category: 'men',
         },
         {

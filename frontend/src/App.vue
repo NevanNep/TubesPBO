@@ -7,8 +7,13 @@
     <div class="header-bar">
       <h1 class="site-title">SCENTIFY</h1>
       <div class="auth-buttons">
-        <router-link to="/login" class="btn btn-login mx-2">Login</router-link>
-        <router-link to="/register" class="btn btn-register mx-2">Register</router-link>
+        <div v-if="user">
+          <button @click="logout" class="btn btn-register mx-2">Logout</button>
+        </div>
+        <div v-else>
+          <router-link to="/login" class="btn btn-login mx-2">Login</router-link>
+          <router-link to="/register" class="btn btn-register mx-2">Register</router-link>
+        </div>
       </div>
     </div>
 
@@ -39,29 +44,47 @@
 <script>
 export default {
   name: "App",
+  data() {
+    return {
+      user: null,
+    };
+  },
+  created() {
+    this.user = JSON.parse(localStorage.getItem("loggedInUser"));
+  },
+  watch: {
+    $route() {
+      this.user = JSON.parse(localStorage.getItem("loggedInUser"));
+    },
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("loggedInUser");
+      alert("Berhasil logout.");
+      this.user = null;
+      this.$router.push("/login");
+    },
+  },
 };
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* Navbar merah atas */
 .navbar-top {
   height: 25px;
-  background-color: #dc3545; /* merah */
+  background-color: #dc3545;
 }
 
-/* Bar putih di bawah navbar */
 .header-bar {
   background-color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Tulisan SCENTIFY warna merah */
 .site-title {
   color: #dc3545;
   margin: 0;
@@ -71,7 +94,6 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-/* Tombol Login dan Register */
 .btn-login, .btn-register {
   background-color: white;
   color: #dc3545;
@@ -87,14 +109,12 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-/* Hover tombol */
 .btn-login:hover, .btn-register:hover {
   background-color: #a71d2a;
   color: white;
   border-color: #a71d2a;
 }
 
-/* Active tombol */
 .btn-login:active, .btn-register:active {
   background-color: #a71d2a;
   color: white;
@@ -102,14 +122,12 @@ export default {
   transition: none;
 }
 
-/* Background merah muda muda di bawah header-bar */
 .pink-background {
-  background-color: #fff0f2; /* very light pink */
-  min-height: 100vh; /* biar cover seluruh area konten */
+  background-color: #fff0f2;
+  min-height: 100vh;
   padding: 30px 40px;
 }
 
-/* Footer styling */
 footer {
   font-family: 'Poppins', sans-serif;
   letter-spacing: 0.05em;
@@ -119,21 +137,18 @@ footer {
   user-select: none;
 }
 
-/* Container footer */
 footer .container {
   max-width: 960px;
   margin: 0 auto;
 }
 
-/* Footer copyright text */
 footer p {
   font-weight: 600;
   font-size: 1rem;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   margin-bottom: 15px;
 }
 
-/* Footer links */
 .footer-link {
   color: #ffe3e6;
   font-weight: 500;
@@ -144,7 +159,6 @@ footer p {
   display: inline-block;
 }
 
-/* Underline animation on hover */
 .footer-link::after {
   content: '';
   position: absolute;
@@ -164,14 +178,12 @@ footer p {
   width: 100%;
 }
 
-/* Icon spacing */
 footer .mt-2 a i {
   margin-right: 6px;
   font-size: 1.1rem;
   vertical-align: middle;
 }
 
-/* Footer social media links bigger */
 footer .mt-2 a {
   font-weight: 600;
   font-size: 1.1rem;

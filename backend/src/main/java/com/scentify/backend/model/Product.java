@@ -58,7 +58,7 @@ public class Product {
         return category;
     }
 
-    public List<review> getReviews() {
+    public List<Review> getReviews() {
         return reviews;
     }
 
@@ -93,7 +93,7 @@ public class Product {
         return result;
     }
 
-    public void addReview(review review) {
+    public void addReview(Review review) {
         reviews.add(review);
     }
 }

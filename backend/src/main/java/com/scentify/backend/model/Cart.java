@@ -44,4 +44,3 @@ public class Cart {
         System.out.println("Total: Rp" + calculateTotal());
     }
 }
-

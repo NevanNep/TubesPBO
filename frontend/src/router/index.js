@@ -5,7 +5,7 @@ import CartPage from '../components/CartPage.vue'; // Halaman keranjang
 import PaymentPage from '../components/PaymentPage.vue'; // Halaman pembayaran
 import LoginPage from '../components/LoginPage.vue'; // Halaman login
 import RegisterPage from '../components/RegisterPage.vue'; // Halaman register
-import ReviewPage from '@/components/ReviewPage.vue';
+import ReviewPage from '@/components/ReviewPage.vue'; // Halaman review
 
 const routes = [
   { path: '/', component: MenuPage },
@@ -14,12 +14,12 @@ const routes = [
   { path: '/payment', component: PaymentPage },
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
-  { path: '/review', component: ReviewPage }
+  { path: '/reviews', component: ReviewPage } // Ganti ke /reviews
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 export default router;

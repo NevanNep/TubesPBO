@@ -9,4 +9,3 @@ import 'bootstrap'; // jika ingin pakai komponen JS Bootstrap seperti modal, dro
 createApp(App)
   .use(router) // Menambahkan router ke aplikasi Vue
   .mount('#app');
-  //TES

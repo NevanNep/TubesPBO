@@ -24,11 +24,16 @@ public class reviewController {
     // Get review by ID
     @GetMapping("/{id}")
     public ResponseEntity<review> getReviewById(@PathVariable String id) {
-        review review = reviewService.getReviewById(id);
-        if (review != null) {
-            return ResponseEntity.ok(review);
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Long reviewId = Long.parseLong(id);
+            review review = reviewService.getReviewById(reviewId).orElse(null);
+            if (review != null) {
+                return ResponseEntity.ok(review);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -41,21 +46,31 @@ public class reviewController {
     // Update review
     @PutMapping("/{id}")
     public ResponseEntity<review> updateReview(@PathVariable String id, @RequestBody review updatedReview) {
-        review review = reviewService.updateReview(id, updatedReview);
-        if (review != null) {
-            return ResponseEntity.ok(review);
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Long reviewId = Long.parseLong(id);
+            review review = reviewService.updateReview(reviewId, updatedReview).orElse(null);
+            if (review != null) {
+                return ResponseEntity.ok(review);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     // Delete review
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable String id) {
-        if (reviewService.deleteReview(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Long reviewId = Long.parseLong(id);
+            if (reviewService.deleteReview(reviewId)) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

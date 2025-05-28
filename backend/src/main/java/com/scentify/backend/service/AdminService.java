@@ -3,7 +3,7 @@ package com.scentify.backend.service;
 import com.scentify.backend.model.Admin;
 import com.scentify.backend.model.Product;
 import com.scentify.backend.repository.AdminRepository;
-import com.scentify.backend.repository.ProductRepository; //nanti sesuain dengan nama repository product
+import com.scentify.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,8 +23,8 @@ public class AdminService {
         return productRepo.save(product);
     }
 
-    public Product updateProduct(Long productId, Product updatedProduct) {
-        return productRepo.findById(productId.toString()).map(product -> {
+    public Product updateProduct(String productId, Product updatedProduct) {
+        return productRepo.findById(productId).map(product -> {
             product.setNama(updatedProduct.getNama());
             product.setBrand(updatedProduct.getBrand());
             product.setPrice(updatedProduct.getPrice());
@@ -34,8 +34,8 @@ public class AdminService {
         }).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public void deleteProduct(Long productId) {
-        productRepo.deleteById(productId.toString());
+    public void deleteProduct(String productId) {
+        productRepo.deleteById(productId);
     }
 
     public Optional<Admin> getAdminById(Long id) {

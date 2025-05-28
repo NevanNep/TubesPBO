@@ -1,44 +1,48 @@
 package com.scentify.backend.service;
 
 import com.scentify.backend.model.review;
+import com.scentify.backend.repository.reviewRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class reviewService {
 
-    // Simulasi database
-    private List<review> reviewList = new ArrayList<>();
+    private final reviewRepository reviewRepository;
 
-    public List<review> getAllReviews() {
-        return reviewList;
+    @Autowired
+    public reviewService(reviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
     }
 
-    public review getReviewById(String id) {
-        return reviewList.stream()
-                .filter(review -> review.getReviewId().equals(id))
-                .findFirst()
-                .orElse(null);
+    public List<review> getAllReviews() {
+        return reviewRepository.findAll();
+    }
+
+    public Optional<review> getReviewById(Long id) {
+        return reviewRepository.findById(id);
     }
 
     public review createReview(review review) {
-        reviewList.add(review);
-        return review;
+        return reviewRepository.save(review);
     }
 
-    public review updateReview(String id, review updated) {
-        for (int i = 0; i < reviewList.size(); i++) {
-            if (reviewList.get(i).getReviewId().equals(id)) {
-                reviewList.set(i, updated);
-                return updated;
-            }
+    public Optional<review> updateReview(Long id, review updated) {
+        return reviewRepository.findById(id).map(existing -> {
+            existing.setKomentar(updated.getKomentar());
+            existing.setRating(updated.getRating());
+            return reviewRepository.save(existing);
+        });
+    }
+
+    public boolean deleteReview(Long id) {
+        if (reviewRepository.existsById(id)) {
+            reviewRepository.deleteById(id);
+            return true;
         }
-        return null;
-    }
-
-    public boolean deleteReview(String id) {
-        return reviewList.removeIf(review -> review.getReviewId().equals(id));
+        return false;
     }
 }

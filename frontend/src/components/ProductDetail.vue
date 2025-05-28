@@ -77,7 +77,7 @@ export default {
           price: 3200000,
           description: 'Parfum klasik dengan kombinasi floral dan aldehyde.',
           image: '/images/parfumeChanelNo5.jpg',
-          stock: 3,
+          stock: 0, // Stok 0
         },
       ],
       product: {},
@@ -91,13 +91,13 @@ export default {
   },
   methods: {
     addToCart() {
-       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    if (!loggedInUser) {
-      alert('Silakan login terlebih dahulu untuk membeli produk.');
-    this.$router.push('/login');
-      return;
-    }
+      if (!loggedInUser) {
+        alert('Silakan login terlebih dahulu untuk membeli produk.');
+        this.$router.push('/login');
+        return;
+      }
 
       if (this.product.stock === 0) {
         alert('Maaf, produk ini sedang habis stok.');
@@ -105,8 +105,8 @@ export default {
       }
 
       const cart = JSON.parse(localStorage.getItem('cartItems')) || [];
-
       const existingIndex = cart.findIndex(p => p.id === this.product.id);
+
       if (existingIndex !== -1) {
         cart[existingIndex].quantity += 1;
       } else {
@@ -114,10 +114,8 @@ export default {
       }
 
       localStorage.setItem('cartItems', JSON.stringify(cart));
-
       this.product.stock -= 1;
       this.saveProductStock();
-
       alert('Produk berhasil ditambahkan ke keranjang!');
     },
 
@@ -131,11 +129,9 @@ export default {
       const id = parseInt(this.$route.params.id);
       let storedProducts = JSON.parse(localStorage.getItem('products')) || {};
 
-      // Jika produk sudah pernah disimpan ke localStorage (karena perubahan stok, dll)
       if (storedProducts[id]) {
         this.product = storedProducts[id];
       } else {
-        // Ambil dari daftar default
         this.product = this.products.find(p => p.id === id) || this.products[0];
       }
     },
@@ -160,3 +156,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.product-image {
+  max-height: 400px;
+  object-fit: contain;
+}
+</style>
+

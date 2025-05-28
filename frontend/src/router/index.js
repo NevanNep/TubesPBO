@@ -7,6 +7,8 @@ import LoginPage from '../components/LoginPage.vue'; // Halaman login
 import RegisterPage from '../components/RegisterPage.vue'; // Halaman register
 import ReviewPage from '@/components/ReviewPage.vue'; // Halaman review
 
+
+
 const routes = [
   { path: '/', component: MenuPage },
   { path: '/product/:id', component: ProductDetail },

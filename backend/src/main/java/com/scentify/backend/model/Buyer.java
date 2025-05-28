@@ -22,4 +22,10 @@ public class Buyer extends User{
         orderHistory.addAll(cart);
         cart.clear();
     }
+
+
+    public List<String> getCart() {
+        return cart;
+    }
+
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class categoryService {
+public class CategoryService {
 
     private List<Category> categories = new ArrayList<>();
 

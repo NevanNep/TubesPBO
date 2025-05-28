@@ -29,7 +29,7 @@ public class BuyerController {
             @PathVariable Long productId,
             @RequestParam int quantity
     ) {
-        String message = buyerService.addToCart(buyerId, productId, quantity);
+        String message = buyerService.addToCart(buyerId, String.valueOf(productId), quantity);
         return ResponseEntity.ok(message);
     }
 }

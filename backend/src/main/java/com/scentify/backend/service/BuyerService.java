@@ -27,16 +27,17 @@ public class BuyerService {
         return buyerRepo.findById(id);
     }
 
-    public String addToCart(Long buyerId, Long productId, int quantity) {
-        Buyer buyer = buyerRepo.findById(buyerId)
-                .orElseThrow(() -> new RuntimeException("Buyer not found"));
-        Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    public String addToCart(Long buyerId, String productId, int quantity) {
+        Buyer buyer = buyerRepo.findById(buyerId).orElse(null);
+            if (buyer == null) return "Buyer not found.";
 
-        Cart cart = buyer.getCart();
-        cart.getItems().put(product, quantity); // sesuaikan dengan struktur cart-mu
-        cartRepo.save(cart);
+        // Tambahkan langsung ke List<String> cart milik buyer
+            for (int i = 0; i < quantity; i++) {
+               buyer.getCart().add(productId);
+            }
 
+        buyerRepo.save(buyer); // simpan perubahan
         return "Product added to cart.";
     }
+
 }

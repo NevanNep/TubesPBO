@@ -42,19 +42,21 @@
 
     <!-- Review Produk -->
     <div class="mt-5">
-      <h4 class="section-title">Review Produk</h4>
+      <h5 class="fw-bold border-bottom pb-2 mb-3">Review Produk</h5>
       <div v-if="reviews.length === 0" class="text-muted fst-italic">Belum ada review.</div>
-      <div v-else class="list-group mt-3">
+      <div v-else class="d-flex flex-column gap-3">
         <div
           v-for="(review, index) in reviews"
           :key="index"
-          class="list-group-item"
+          class="review-box border rounded p-3"
         >
-          <div class="d-flex justify-content-between">
-            <strong>{{ review.user }}</strong>
-            <span class="text-warning"><i class="bi bi-star-fill"></i> {{ review.rating }}/5</span>
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="fw-semibold">{{ review.user }}</span>
+            <span class="text-warning small">
+              <i class="bi bi-star-fill"></i> {{ review.rating }}/5
+            </span>
           </div>
-          <p class="mb-0">{{ review.text }}</p>
+          <p class="mb-0 text-muted">"{{ review.text }}"</p>
         </div>
       </div>
     </div>
@@ -98,22 +100,17 @@ export default {
     ],
       product: {},
       reviews: [],
-      newReview: {
-        user: '',
-        rating: '',
-        text: '',
-      },
     };
   },
   methods: {
     addToCart() {
-       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    if (!loggedInUser) {
-      alert('Silakan login terlebih dahulu untuk membeli produk.');
-    this.$router.push('/login');
-      return;
-    }
+      if (!loggedInUser) {
+        alert('Silakan login terlebih dahulu untuk membeli produk.');
+        this.$router.push('/login');
+        return;
+      }
 
       if (this.product.stock === 0) {
         alert('Maaf, produk ini sedang habis stok.');
@@ -130,10 +127,8 @@ export default {
       }
 
       localStorage.setItem('cartItems', JSON.stringify(cart));
-
       this.product.stock -= 1;
       this.saveProductStock();
-
       alert('Produk berhasil ditambahkan ke keranjang!');
     },
 
@@ -147,19 +142,11 @@ export default {
       const id = parseInt(this.$route.params.id);
       let storedProducts = JSON.parse(localStorage.getItem('products')) || {};
 
-      // Jika produk sudah pernah disimpan ke localStorage (karena perubahan stok, dll)
       if (storedProducts[id]) {
         this.product = storedProducts[id];
       } else {
-        // Ambil dari daftar default
         this.product = this.products.find(p => p.id === id) || this.products[0];
       }
-    },
-
-    submitReview() {
-      this.reviews.push({ ...this.newReview });
-      this.newReview = { user: '', rating: '', text: '' };
-      alert('Ulasan berhasil dikirim!');
     },
 
     generateSampleReviews() {
@@ -176,3 +163,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.product-image {
+  max-height: 350px;
+  object-fit: contain;
+}
+
+.review-box {
+  background-color: #fafafa;
+  border-color: #e0e0e0;
+  transition: background 0.2s ease;
+}
+
+.review-box:hover {
+  background-color: #f5f5f5;
+}
+</style>

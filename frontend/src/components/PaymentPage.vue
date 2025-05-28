@@ -2,20 +2,16 @@
   <div class="container my-5" style="max-width: 650px;">
     <h2 class="mb-4 text-center fw-bold section-title">Pembayaran</h2>
 
-    <form @submit.prevent="processPayment" v-if="!paymentSuccess" class="card p-4 shadow-sm border-0">
-      <!-- Pilih Metode Pembayaran -->
+    <!-- Form pembayaran hanya tampil jika belum bayar -->
+    <form @submit.prevent="processPayment" v-if="!orderShipped" class="card p-4 shadow-sm border-0">
+      <!-- Pilihan metode pembayaran -->
       <div class="mb-3">
         <label for="paymentMethod" class="form-label fw-semibold">Metode Pembayaran:</label>
         <div class="input-group">
           <span class="input-group-text">
             <i :class="paymentIcon[paymentMethod]" class="text-secondary"></i>
           </span>
-          <select
-            id="paymentMethod"
-            v-model="paymentMethod"
-            class="form-select"
-            required
-          >
+          <select id="paymentMethod" v-model="paymentMethod" class="form-select" required>
             <option value="credit-card">Kartu Kredit</option>
             <option value="paypal">PayPal</option>
             <option value="bank-transfer">Transfer Bank</option>
@@ -23,7 +19,7 @@
         </div>
       </div>
 
-      <!-- Jika Transfer Bank, tampilkan daftar bank -->
+      <!-- Jika Transfer Bank, pilih bank -->
       <div v-if="paymentMethod === 'bank-transfer'" class="mb-3">
         <label for="selectedBank" class="form-label fw-semibold">Pilih Bank:</label>
         <select id="selectedBank" v-model="selectedBank" class="form-select" required>
@@ -35,7 +31,7 @@
         </select>
       </div>
 
-      <!-- Alamat Pengiriman -->
+      <!-- Alamat pengiriman -->
       <div class="mb-3">
         <label for="shippingAddress" class="form-label fw-semibold">Alamat Pengiriman:</label>
         <textarea
@@ -48,7 +44,7 @@
         ></textarea>
       </div>
 
-      <!-- Tombol Konfirmasi -->
+      <!-- Tombol konfirmasi -->
       <button
         type="submit"
         class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2"
@@ -60,11 +56,18 @@
       </button>
     </form>
 
-    <!-- Transisi setelah sukses -->
+    <!-- Pesan pesanan dikirim -->
     <transition name="fade">
-      <div v-if="paymentSuccess" class="text-center mt-5 p-4 shadow rounded bg-white">
+      <div v-if="orderShipped && !showReview" class="text-center mt-5 p-4 shadow rounded bg-white">
         <h3 class="text-success fw-bold mb-3">✅ Terima kasih telah membeli produk!</h3>
-        <p class="text-muted">Silakan beri ulasan untuk produk yang sudah Anda beli:</p>
+        <p class="text-muted">Pesanan Anda sedang dikirim...</p>
+      </div>
+    </transition>
+
+    <!-- Form review muncul setelah produk sampai -->
+    <transition name="fade">
+      <div v-if="showReview" class="text-center mt-5 p-4 shadow rounded bg-white">
+        <p class="text-muted">Produk telah sampai. Silakan beri ulasan:</p>
         <ReviewPage :productId="productId" />
       </div>
     </transition>
@@ -81,10 +84,11 @@ export default {
   data() {
     return {
       paymentMethod: 'credit-card',
-      selectedBank: '', // Tambahan untuk pilihan bank
+      selectedBank: '',
       shippingAddress: '',
-      paymentSuccess: false,
       loading: false,
+      orderShipped: false,
+      showReview: false,
       productId: 1,
       paymentIcon: {
         'credit-card': 'bi bi-credit-card',
@@ -97,12 +101,15 @@ export default {
     processPayment() {
       this.loading = true;
       setTimeout(() => {
-        this.paymentSuccess = true;
+        // Selesai bayar, pesanan dikirim
+        this.orderShipped = true;
         this.loading = false;
-        localStorage.setItem(
-          'orderStatus',
-          JSON.stringify({ status: 'success', productId: this.productId })
-        );
+        localStorage.setItem('orderStatus', JSON.stringify({ status: 'success', productId: this.productId }));
+
+        // Simulasikan barang sampai 5 detik kemudian
+        setTimeout(() => {
+          this.showReview = true;
+        }, 5000);
       }, 1500);
     },
   },

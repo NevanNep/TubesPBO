@@ -16,7 +16,7 @@
 
   <!-- Aroma -->
   <!-- Aroma -->
-<p><strong>Aroma:</strong> {{ product.aromas.join(', ') }}</p>
+  <p><strong>Aroma:</strong> {{ product.aromas.join(', ') }}</p>
 
   <h4 class="text-danger fw-bold mb-2">Rp {{ product.price.toLocaleString() }}</h4>
    <p :class="['fw-semibold', 'mb-4', product.stock > 0 ? 'text-success' : 'text-danger', 'fs-4']">
@@ -71,7 +71,7 @@ export default {
         price: 3000000,
         description: 'Miss Dior adalah wewangian berkarakter kuat yang memadukan keanggunan bunga putih dengan sentuhan Rose yang misterius. Sebagai Extrait De Parfum, aromanya sangat pekat dan tahan lama—pas banget untuk acara formal atau momen spesial di malam hari. Diracik dengan detail yang penuh ketelitian, Miss Dior memancarkan aura yang kuat tapi tetap elegan, cocok untuk kamu yang ingin tampil beda dan berkesan..',
         image: '/images/parfumeMissDior.jpg',
-        stock: 5,
+        stock: 0,
         size: 50, // ukuran dalam ml
         aromas: ['Floral', 'Jasmine', 'Rose']
       },

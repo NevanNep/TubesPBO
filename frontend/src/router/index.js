@@ -9,6 +9,8 @@ import ReviewPage from '@/components/ReviewPage.vue'; // Halaman review
 
 
 
+
+
 const routes = [
   { path: '/', component: MenuPage },
   { path: '/product/:id', component: ProductDetail },

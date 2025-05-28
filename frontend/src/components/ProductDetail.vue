@@ -15,10 +15,8 @@
   <p><strong>Ukuran:</strong> {{ product.size }} ml</p>
 
   <!-- Aroma -->
-  <p><strong>Aroma:</strong></p>
-  <ul class="mb-3">
-    <li v-for="(aroma, index) in product.aromas" :key="index">{{ aroma }}</li>
-  </ul>
+  <!-- Aroma -->
+<p><strong>Aroma:</strong> {{ product.aromas.join(', ') }}</p>
 
   <h4 class="text-danger fw-bold mb-2">Rp {{ product.price.toLocaleString() }}</h4>
    <p :class="['fw-semibold', 'mb-4', product.stock > 0 ? 'text-success' : 'text-danger', 'fs-4']">

@@ -1,43 +1,41 @@
 package com.scentify.backend.service;
-
-import com.scentify.backend.model.Buyer;
-import com.scentify.backend.model.Cart;
-import com.scentify.backend.model.Product;
-import com.scentify.backend.repository.BuyerRepository;
-import com.scentify.backend.repository.CartRepository;// nanti di sesuaikan namanya
-import com.scentify.backend.repository.ProductRepository;// nanti di sesuaikan namanya
-import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@Service
-public class BuyerService {
+// Import User if it's in another package, or define it if missing
+import com.scentify.backend.model.User; // Change package if User is elsewhere
 
-    private final BuyerRepository buyerRepo;
-    private final ProductRepository productRepo;
-    private final CartRepository cartRepo;
+public class BuyerService extends User{
+    private List<String> orderHistory = new ArrayList<>();
+    private List<String> cart = new ArrayList<>();
+    
 
-    public BuyerService(BuyerRepository buyerRepo, ProductRepository productRepo, CartRepository cartRepo) {
-        this.buyerRepo = buyerRepo;
-        this.productRepo = productRepo;
-        this.cartRepo = cartRepo;
+
+    public BuyerService(Long id, String nama, String email, String password, String alamat) {
+        super(id, nama, email, password, alamat);
     }
 
-    public Optional<Buyer> getBuyerById(Long id) {
-        return buyerRepo.findById(id);
+    public void addToCart(String productId, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            cart.add(productId);
+        }
+        System.out.println(quantity + "x Produk " + productId + " ditambahkan ke keranjang!");
     }
 
-    public String addToCart(Long buyerId, String productId, int quantity) {
-        Buyer buyer = buyerRepo.findById(buyerId).orElse(null);
-            if (buyer == null) return "Buyer not found.";
+    public void checkout(String paymentMethod) {
+        System.out.println("Checkout berhasil dengan " + paymentMethod);
+        orderHistory.addAll(cart);
+        cart.clear();
+    }
 
-        // Tambahkan langsung ke List<String> cart milik buyer
-            for (int i = 0; i < quantity; i++) {
-               buyer.getCart().add(productId);
-            }
+    public Optional<Object> getBuyerById(Long id) {
+        // TODO: Implement actual logic to fetch buyer by id
+        return Optional.empty();
+    }
 
-        buyerRepo.save(buyer); // simpan perubahan
-        return "Product added to cart.";
+    public List<String> getCart() {
+        return cart;
     }
 
 }

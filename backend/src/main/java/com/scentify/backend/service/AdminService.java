@@ -24,7 +24,7 @@ public class AdminService {
     }
 
     public Product updateProduct(Long productId, Product updatedProduct) {
-        return productRepo.findById(productId).map(product -> {
+        return productRepo.findById(productId.toString()).map(product -> {
             product.setNama(updatedProduct.getNama());
             product.setBrand(updatedProduct.getBrand());
             product.setPrice(updatedProduct.getPrice());
@@ -35,7 +35,7 @@ public class AdminService {
     }
 
     public void deleteProduct(Long productId) {
-        productRepo.deleteById(productId);
+        productRepo.deleteById(productId.toString());
     }
 
     public Optional<Admin> getAdminById(Long id) {

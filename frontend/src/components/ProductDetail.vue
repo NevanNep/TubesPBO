@@ -10,18 +10,29 @@
       <div class="col-md-7">
         <h2 class="fw-bold mb-3">{{ product.name }}</h2>
         <p class="text-muted">{{ product.description }}</p>
-        <h4 class="text-danger fw-bold mb-2">Rp {{ product.price.toLocaleString() }}</h4>
+
+        <!-- Ukuran -->
+  <p><strong>Ukuran:</strong> {{ product.size }} ml</p>
+
+  <!-- Aroma -->
+  <p><strong>Aroma:</strong></p>
+  <ul class="mb-3">
+    <li v-for="(aroma, index) in product.aromas" :key="index">{{ aroma }}</li>
+  </ul>
+
+  <h4 class="text-danger fw-bold mb-2">Rp {{ product.price.toLocaleString() }}</h4>
+   <p :class="['fw-semibold', 'mb-4', product.stock > 0 ? 'text-success' : 'text-danger', 'fs-4']">
+  Stok: {{ product.stock > 0 ? product.stock : 'Habis' }}
+</p>
+</div>
 
         <!-- Stok Produk -->
-        <p :class="{'text-success': product.stock > 0, 'text-danger': product.stock === 0}" class="fw-semibold mb-4">
-          Stok: {{ product.stock > 0 ? product.stock : 'Habis' }}
-        </p>
-
         <button
           @click="addToCart"
           class="btn btn-danger btn-lg"
           :disabled="product.stock === 0"
           :title="product.stock === 0 ? 'Produk ini sedang habis' : 'Tambah ke Keranjang'"
+          
         >
           <i class="bi bi-cart-plus me-2"></i>
           {{ product.stock === 0 ? 'Stok Habis' : 'Tambah ke Keranjang' }}
@@ -49,7 +60,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -57,31 +67,37 @@ export default {
   data() {
     return {
       products: [
-        {
-          id: 1,
-          name: 'Miss Dior',
-          price: 3000000,
-          description: 'Parfum elegan dengan aroma floral dan sentuhan jasmine.',
-          image: '/images/parfumeMissDior.jpg',
-          stock: 0, // stok 0 agar tombol dinonaktifkan
-        },
-        {
-          id: 2,
-          name: 'Dior Sauvage',
-          price: 2700000,
-          description: 'Aroma maskulin dengan wangi citrus dan amberwood.',
-          image: '/images/Sauvage.jpg',
-          stock: 8,
-        },
-        {
-          id: 3,
-          name: 'Chanel No. 5',
-          price: 3200000,
-          description: 'Parfum klasik dengan kombinasi floral dan aldehyde.',
-          image: '/images/parfumeChanelNo5.jpg',
-          stock: 3,
-        },
-      ],
+      {
+        id: 1,
+        name: 'Miss Dior',
+        price: 3000000,
+        description: 'Miss Dior adalah wewangian berkarakter kuat yang memadukan keanggunan bunga putih dengan sentuhan Rose yang misterius. Sebagai Extrait De Parfum, aromanya sangat pekat dan tahan lama—pas banget untuk acara formal atau momen spesial di malam hari. Diracik dengan detail yang penuh ketelitian, Miss Dior memancarkan aura yang kuat tapi tetap elegan, cocok untuk kamu yang ingin tampil beda dan berkesan..',
+        image: '/images/parfumeMissDior.jpg',
+        stock: 5,
+        size: 50, // ukuran dalam ml
+        aromas: ['Floral', 'Jasmine', 'Rose']
+      },
+      {
+        id: 2,
+        name: 'Dior Sauvage',
+        price: 2700000,
+        description: 'Aroma maskulin dengan wangi citrus dan amberwood.',
+        image: '/images/Sauvage.jpg',
+        stock: 8,
+        size: 60,
+        aromas: ['Citrus', 'Amberwood', 'Spicy']
+      },
+      {
+        id: 3,
+        name: 'Chanel No. 5',
+        price: 3200000,
+        description: 'Parfum klasik dengan kombinasi floral dan aldehyde.',
+        image: '/images/parfumeChanelNo5.jpg',
+        stock: 3,
+        size: 75,
+        aromas: ['Floral', 'Aldehyde', 'Vanilla']
+      },
+    ],
       product: {},
       reviews: [],
     };

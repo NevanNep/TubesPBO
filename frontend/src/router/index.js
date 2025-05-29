@@ -1,22 +1,28 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import MenuPage from '../components/MenuPage.vue'; // Halaman utama menu produk
-import ProductDetail from '../components/ProductDetail.vue'; // Halaman detail produk
-import CartPage from '../components/CartPage.vue'; // Halaman keranjang
-import PaymentPage from '../components/PaymentPage.vue'; // Halaman pembayaran
-import LoginPage from '../components/LoginPage.vue'; // Halaman login
-import RegisterPage from '../components/RegisterPage.vue'; // Halaman register
-import ReviewPage from '@/components/ReviewPage.vue'; // Halaman review
+import MenuPage from '../pages/MenuPage.vue'; // Halaman utama menu produk
+import CartPage from '../pages/CartPage.vue'; // Halaman keranjang
+import PaymentPage from '../pages/PaymentPage.vue'; // Halaman pembayaran
+import LoginPage from '../pages/LoginPage.vue'; // Halaman login
+import RegisterPage from '../pages/RegisterPage.vue'; // Halaman register
+import ReviewPage from '@/pages/ReviewPage.vue'; // Halaman review
+import ProfilePage from '@/pages/ProfilePage.vue';
 
 
 
 const routes = [
   { path: '/', component: MenuPage },
-  { path: '/product/:id', component: ProductDetail },
   { path: '/cart', component: CartPage },
   { path: '/payment', component: PaymentPage },
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
-  { path: '/reviews', component: ReviewPage } // Ganti ke /reviews
+  { path: '/reviews', component: ReviewPage },
+  { path: '/profile', component: ProfilePage},
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('@/pages/ProductDetail.vue')
+  }
+  
 ];
 
 const router = createRouter({
@@ -25,3 +31,4 @@ const router = createRouter({
 });
 
 export default router;
+

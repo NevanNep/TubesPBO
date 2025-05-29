@@ -1,21 +1,7 @@
 <template>
   <div>
-    <!-- Navbar Merah Atas -->
-    <nav class="navbar-top bg-danger"></nav>
-
-    <!-- Bar Putih di bawah Navbar Merah -->
-    <div class="header-bar">
-      <h1 class="site-title">SCENTIFY</h1>
-      <div class="auth-buttons">
-        <div v-if="user">
-          <button @click="logout" class="btn btn-register mx-2">Logout</button>
-        </div>
-        <div v-else>
-          <router-link to="/login" class="btn btn-login mx-2">Login</router-link>
-          <router-link to="/register" class="btn btn-register mx-2">Register</router-link>
-        </div>
-      </div>
-    </div>
+    <!-- Komponen Navbar Utama -->
+    <MainNavbar />
 
     <!-- Background merah muda muda di bawah header-bar -->
     <div class="pink-background">
@@ -42,8 +28,13 @@
 </template>
 
 <script>
+import MainNavbar from "@/components/MainNavbar.vue";
+
 export default {
   name: "App",
+  components: {
+    MainNavbar,
+  },
   data() {
     return {
       user: null,
@@ -94,7 +85,8 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-.btn-login, .btn-register {
+.btn-login,
+.btn-register {
   background-color: white;
   color: #dc3545;
   padding: 8px 20px;
@@ -109,13 +101,15 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-.btn-login:hover, .btn-register:hover {
+.btn-login:hover,
+.btn-register:hover {
   background-color: #a71d2a;
   color: white;
   border-color: #a71d2a;
 }
 
-.btn-login:active, .btn-register:active {
+.btn-login:active,
+.btn-register:active {
   background-color: #a71d2a;
   color: white;
   border-color: #a71d2a;
@@ -123,7 +117,7 @@ export default {
 }
 
 .pink-background {
-  background-color: #fff0f2;
+  background-color: #fff;
   min-height: 100vh;
   padding: 30px 40px;
 }
@@ -131,7 +125,7 @@ export default {
 footer {
   font-family: 'Poppins', sans-serif;
   letter-spacing: 0.05em;
-  background-color: #dc3545;
+  background-color: #45000D;
   color: #fff;
   padding: 30px 0;
   user-select: none;

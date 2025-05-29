@@ -1,109 +1,279 @@
 <template>
-  <div class="card product-card shadow-sm mx-2 my-3 animate_animated animate_fadeInUp">
-    <div class="img-wrapper position-relative overflow-hidden">
-      <img :src="product.image" :alt="product.name" class="card-img-top product-image" />
+  <div class="product-card" @mouseover="hover = true" @mouseleave="hover = false">
+    <div class="image-container">
+      <img :src="product.image" :alt="product.name" class="product-image" />
 
-      <!-- Badge New -->
-      <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-1 rounded-pill shadow-sm">
-        New
-      </span>
+      <div v-if="product.discount > 0" class="discount-badge">
+        -{{ product.discount }}%
+      </div>
 
-      <!-- Tombol Add to Cart -->
-      <button
-        @click="addToCart"
-        class="btn btn-cart add-cart-btn position-absolute top-50 start-50 translate-middle"
-      >
-        <i class="bi bi-cart-plus me-1"></i> Keranjang
-      </button>
+      <div class="quick-view" v-if="hover">QUICK VIEW</div>
     </div>
 
-    <div class="card-body text-center">
-      <h5 class="card-title product-name">{{ product.name }}</h5>
-      <p class="card-text product-description text-truncate">{{ product.description }}</p>
-      <p class="text-danger fw-bold product-price">Rp {{ product.price.toLocaleString() }}</p>
+    <div class="product-content">
+      <h3 class="brand">{{ product.brand.toUpperCase() }}</h3>
+      <p class="product-name" :title="product.name">{{ product.name }}</p>
+
+      <div class="price-info">
+        <div class="price">
+          <span class="original" v-if="product.discount > 0">
+            Rp {{ product.price.toLocaleString('id-ID') }}
+          </span>
+          <span class="final-price">
+            Rp {{ discountedPrice.toLocaleString('id-ID') }}
+          </span>
+        </div>
+
+        <!-- Ganti bagian button cart-btn dengan SVG ini -->
+        <button
+  class="cart-btn"
+  @click.stop="addToCart"
+  :aria-label="`Tambah ${product.name} ke keranjang`"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="cart-icon"
+    viewBox="0 0 24 24"
+  >
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="20" cy="21" r="1" />
+    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+  </svg>
+</button>
+
+
+
+      </div>
+
+      <div class="rating">
+        <span
+          v-for="n in 5"
+          :key="n"
+          class="star"
+          :class="{ filled: n <= product.rating }"
+          >★</span
+        >
+      </div>
+
+      <div class="divider"></div>
+      <p class="stock">Masih Tersedia</p>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['product'],
+  props: {
+    product: {
+      type: Object,
+      required: true,
+      default: () => ({
+        brand: '',
+        name: '',
+        image: '',
+        price: 0,
+        discount: 0,
+        rating: 0,
+      }),
+    },
+  },
+  data() {
+    return {
+      hover: false,
+    };
+  },
+  computed: {
+    discountedPrice() {
+      return this.product.discount > 0
+        ? Math.round(this.product.price * (1 - this.product.discount / 100))
+        : this.product.price;
+    },
+  },
   methods: {
     addToCart() {
-      this.$emit('add-to-cart', this.product);
+      alert(`'${this.product.name}' ditambahkan ke keranjang.`);
     },
   },
 };
 </script>
 
 <style scoped>
-@import "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css";
-
 .product-card {
-  width: 18rem;
-  border-radius: 16px;
+  width: 220px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
 .product-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.img-wrapper {
-  height: 200px;
+.image-container {
   position: relative;
-  background: #f8f9fa;
+  height: 240px;
+  /* Hilangkan padding dan background abu-abu */
+  padding: 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .product-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  border-radius: 0; /* hilangkan radius kalau mau full */
+  box-shadow: none; /* hilangkan bayangan supaya bersih */
 }
 
-.product-card:hover .product-image {
-  transform: scale(1.08);
-}
-
-.add-cart-btn {
-  opacity: 0;
-  transition: all 0.3s ease;
-  padding: 0.5rem 1rem;
+.discount-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: #c62828;
+  color: white;
   font-size: 0.85rem;
-  border-radius: 30px;
-  pointer-events: none;
-  background: #dc3545;
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.5);
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.img-wrapper:hover .add-cart-btn {
+.quick-view {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #45000D;
+  color: #F7E7CE;
+  text-align: center;
+  padding: 8px 0;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.image-container:hover .quick-view {
   opacity: 1;
-  pointer-events: auto;
-  transform: scale(1.05);
+  transform: translateY(0);
 }
 
-.add-cart-btn:hover {
-  background: #bb2d3b;
+.product-content {
+  padding: 1rem;
+}
+
+.brand {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
 }
 
 .product-name {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #212529;
-}
-
-.product-description {
-  color: #6c757d;
   font-size: 0.9rem;
-  min-height: 2.5rem;
+  font-weight: 500;
+  color: #45000D;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  height: 2.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.product-price {
-  font-size: 1.1rem;
+.price-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.price {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.original {
+  font-size: 0.75rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.final-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color:  #45000D;
+;
+}
+
+.cart-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #45000D;
+;
+  transition: stroke 0.3s ease;
+}
+
+.cart-btn:hover .cart-icon {
+  stroke: #9b1c1c;
+}
+
+.rating {
+  margin-top: 8px;
+}
+
+.star {
+  color: #ddd;
+  font-size: 1rem;
+}
+
+.star.filled {
+  color: #f4c110;
+}
+
+.divider {
+  height: 4px;
+  background: #c62828;
+  margin: 10px 0 5px;
+  border-radius: 2px;
+}
+
+.stock {
+  color: #999;
+  font-size: 0.8rem;
 }
 </style>

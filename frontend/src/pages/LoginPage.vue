@@ -1,8 +1,8 @@
 <template>
   <div class="container py-5 d-flex flex-column align-items-center" style="min-height: 100vh; background-color: #f8f9fa;">
-    <h2 class="text-center mb-4 fw-bold" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: black;">
-    Login
-</h2>
+    <h2 class="text-center mb-4 fw-bold" style="font-family: Poppins, Poppins; font-size: 2.5rem; color: black;">
+      Login
+    </h2>
 
     <form @submit.prevent="login" class="border rounded p-4 shadow-sm bg-white" style="width: 100%; max-width: 400px;">
       <div class="mb-3">
@@ -17,6 +17,7 @@
           autocomplete="email"
         />
       </div>
+
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold">Password</label>
         <input
@@ -29,6 +30,7 @@
           autocomplete="current-password"
         />
       </div>
+
       <button type="submit" class="btn btn-danger w-100 fw-semibold">
         Login
       </button>
@@ -48,25 +50,40 @@ export default {
   data() {
     return {
       email: '',
-      password: '',
+      password: ''
     };
+  },
+  mounted() {
+    // Jika sudah login, redirect ke halaman utama
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      this.$router.push('/');
+    }
   },
   methods: {
     login() {
-  const storedUser = JSON.parse(localStorage.getItem('user'));
+      const storedUser = JSON.parse(localStorage.getItem('user'));
 
-  if (storedUser && storedUser.email === this.email && storedUser.password === this.password) {
-    alert('Login berhasil!');
+      if (!this.email || !this.password) {
+        alert('Mohon isi semua field.');
+        return;
+      }
 
-    // Simpan status login
-    localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+      if (
+        storedUser &&
+        storedUser.email === this.email &&
+        storedUser.password === this.password
+      ) {
+        alert('Login berhasil!');
 
-    this.$router.push('/'); // Redirect ke homepage
-  } else {
-    alert('Email atau password salah.');
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+
+        this.$router.push('/');
+      } else {
+        alert('Email atau password salah.');
+      }
+    }
   }
-}
-  },
 };
 </script>
 
@@ -75,7 +92,7 @@ export default {
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Poppins;
   background-color: #f8f9fa;
 }
 

@@ -284,8 +284,8 @@ export default {
   margin: 1rem auto 0;
   display: block;
   background: transparent;
-  border: 1px solid #d33;
-  color: #d33;
+  border: 1px solid #45000D;
+  color: #45000D;
   padding: 0.5rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;

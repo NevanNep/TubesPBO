@@ -9,6 +9,8 @@ import ProfilePage from '@/pages/ProfilePage.vue';
 
 
 
+
+
 const routes = [
   { path: '/', component: MenuPage },
   { path: '/cart', component: CartPage },

@@ -1,68 +1,88 @@
 <template>
   <div class="container py-5">
-    <h2 class="text-center mb-5 fw-bold section-title">Keranjang Belanja</h2>
+    <h2 class="fw-bold fs-3 mb-4 border-bottom pb-3">Keranjang Saya</h2>
 
-    <!-- Produk di keranjang -->
-    <div v-if="cartItems.length > 0" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-      <div v-for="item in cartItems" :key="item.id" class="col">
-        <div class="card product-card h-100 shadow-sm border-0 position-relative overflow-hidden">
-          <!-- Custom Checkbox -->
-          <label class="custom-checkbox" :for="'select-' + item.id" tabindex="0">
+    <div v-if="cartItems.length > 0" class="cart-table">
+      <table class="table align-middle">
+        <thead>
+          <tr class="bg-light">
+            <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
+            <th colspan="2">Produk</th>
+            <th class="text-center">Harga</th>
+            <th class="text-center">Jumlah</th>
+            <th class="text-center">Total</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in cartItems" :key="item.id">
+            <td><input type="checkbox" :value="item.id" v-model="selectedItems" /></td>
+            <td style="width: 80px">
+              <img :src="item.image" alt="Product" class="img-thumbnail rounded" style="width: 70px" />
+            </td>
+            <td>
+              <div class="fw-semibold">{{ item.name }}</div>
+              <div class="text-muted small">{{ item.description }}</div>
+            </td>
+            <td class="text-center">Rp {{ item.price.toLocaleString() }}</td>
+            <td class="text-center">
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" @click="decreaseQuantity(item)">−</button>
+                <span class="px-3 pt-1">{{ item.quantity }}</span>
+                <button class="btn btn-sm btn-outline-secondary" @click="increaseQuantity(item)">+</button>
+              </div>
+            </td>
+            <td class="text-center text-danger fw-bold">
+              Rp {{ (item.price * item.quantity).toLocaleString() }}
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-danger" @click="removeItem(item.id)">Hapus</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cart-summary bg-white p-4 mt-3 border-top d-flex flex-column flex-md-row justify-content-between align-items-start gap-4">
+        <div class="w-100">
+          <p class="mb-2">
+            Dipilih: <strong>{{ totalItems }}</strong> produk
+          </p>
+          <p class="mb-1">
+            Subtotal: <strong>Rp {{ totalPrice.toLocaleString() }}</strong>
+          </p>
+          <p v-if="voucherApplied" class="text-success mb-1">
+            Diskon Voucher ({{ voucherCode.toUpperCase() }}): -{{ discountPercentage }}%
+          </p>
+          <div class="input-group mt-2 w-100" style="max-width: 320px;">
             <input
-              type="checkbox"
-              :id="'select-' + item.id"
-              v-model="selectedItems"
-              :value="item.id"
-              class="checkbox-input"
+              v-model="voucherCode"
+              type="text"
+              class="form-control"
+              placeholder="Kode Voucher (contoh: DISKON10)"
             />
-            <span class="checkmark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-          </label>
-
-          <router-link :to="'/product/' + item.id" class="d-block overflow-hidden">
-            <img :src="item.image" :alt="item.name" class="card-img-top product-image" />
-          </router-link>
-
-          <div class="card-body text-center d-flex flex-column">
-            <h5 class="card-title fw-semibold text-truncate" :title="item.name">{{ item.name }}</h5>
-            <p class="card-text text-muted small text-truncate" :title="item.description">{{ item.description }}</p>
-            <p class="text-danger fw-bold fs-5 mb-1">Rp {{ item.price.toLocaleString() }}</p>
-            <p class="mb-2">Jumlah: {{ item.quantity }}</p>
-            <button @click="decreaseQuantity(item)" class="btn btn-outline-danger btn-sm mx-auto px-4">
-              <i class="bi bi-dash-lg"></i> Kurangi
-            </button>
+            <button class="btn btn-outline-primary" @click="applyVoucher">Terapkan</button>
           </div>
+          <p v-if="voucherError" class="text-danger small mt-2">{{ voucherError }}</p>
+        </div>
+
+        <div class="text-end w-100">
+          <p class="fs-5 mb-2">Total Akhir:</p>
+          <p class="text-danger fs-3 fw-bold">
+            Rp {{ finalTotal.toLocaleString() }}
+          </p>
+          <button
+            class="btn btn-animated-checkout mt-2 w-100"
+            :disabled="selectedItems.length === 0"
+            @click="goToPayment"
+          >
+            <span>Checkout</span>
+            <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Kalau keranjang kosong -->
-    <p v-else class="text-center text-muted fst-italic fs-5 mt-5">
-      Keranjang belanja kosong.
-    </p>
-
-    <!-- Summary dan tombol bayar -->
-    <div class="summary mt-5 p-4 rounded shadow-sm bg-white text-center">
-      <p class="fs-5 mb-2">
-        Total Barang: 
-        <span class="badge bg-secondary px-3 py-2 fs-6">{{ totalItems }}</span>
-      </p>
-      <p class="fs-4 fw-bold text-danger mb-3">
-        Total Harga: Rp {{ totalPrice.toLocaleString() }}
-      </p>
-
-      <button
-        class="btn btn-custom-payment"
-        :disabled="selectedItems.length === 0"
-        @click="goToPayment"
-        :title="selectedItems.length === 0 ? 'Pilih produk terlebih dahulu' : ''"
-      >
-        <i class="bi bi-credit-card me-2"></i> Lanjutkan ke Pembayaran
-      </button>
-    </div>
+    <p v-else class="text-center text-muted fs-5 py-5">Keranjang kamu masih kosong.</p>
   </div>
 </template>
 
@@ -70,204 +90,137 @@
 export default {
   data() {
     return {
-      cartItems: JSON.parse(localStorage.getItem('cartItems')) || [],
+      cartItems: JSON.parse(localStorage.getItem("cartItems")) || [],
       selectedItems: [],
+      voucherCode: "",
+      voucherApplied: false,
+      discountPercentage: 0,
+      voucherError: ""
     };
   },
   computed: {
-    totalPrice() {
-      return this.cartItems
-        .filter(item => this.selectedItems.includes(item.id))
-        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    selectAll: {
+      get() {
+        return this.selectedItems.length === this.cartItems.length && this.cartItems.length > 0;
+      },
+      set(value) {
+        this.selectedItems = value ? this.cartItems.map(item => item.id) : [];
+      }
     },
     totalItems() {
       return this.cartItems
         .filter(item => this.selectedItems.includes(item.id))
         .reduce((sum, item) => sum + item.quantity, 0);
+    },
+    totalPrice() {
+      return this.cartItems
+        .filter(item => this.selectedItems.includes(item.id))
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    },
+    finalTotal() {
+      if (this.voucherApplied) {
+        return Math.floor(this.totalPrice * (1 - this.discountPercentage / 100));
+      }
+      return this.totalPrice;
     }
   },
   methods: {
-    decreaseQuantity(product) {
-      let cartItems = [...this.cartItems];
-      const index = cartItems.findIndex(item => item.id === product.id);
-      if (index !== -1) {
-        if (cartItems[index].quantity > 1) {
-          cartItems[index].quantity -= 1;
-        } else {
-          cartItems.splice(index, 1);
-          this.selectedItems = this.selectedItems.filter(id => id !== product.id);
-        }
+    decreaseQuantity(item) {
+      const found = this.cartItems.find(i => i.id === item.id);
+      if (found && found.quantity > 1) {
+        found.quantity--;
+      } else {
+        this.removeItem(item.id);
       }
-      localStorage.setItem('cartItems', JSON.stringify(cartItems));
-      this.cartItems = cartItems;
+      this.updateCart();
     },
-     goToPayment() {
-    // Cek login dulu
-    const user = localStorage.getItem('user');
-    if (!user) {
-      alert('Silakan login terlebih dahulu sebelum melanjutkan pembayaran.');
-      this.$router.push('/login');
-      return;
-    }
-    // Kalau sudah login, lanjut ke halaman payment
-    if (this.selectedItems.length > 0) {
+    increaseQuantity(item) {
+      const found = this.cartItems.find(i => i.id === item.id);
+      if (found) {
+        found.quantity++;
+      }
+      this.updateCart();
+    },
+    removeItem(id) {
+      this.cartItems = this.cartItems.filter(item => item.id !== id);
+      this.selectedItems = this.selectedItems.filter(selId => selId !== id);
+      this.updateCart();
+    },
+    updateCart() {
+      localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
+    },
+    toggleSelectAll() {
+      this.selectAll = !this.selectAll;
+    },
+    applyVoucher() {
+      const code = this.voucherCode.trim().toLowerCase();
+      if (code === "diskon10") {
+        this.discountPercentage = 10;
+        this.voucherApplied = true;
+        this.voucherError = "";
+      } else if (code === "diskon20") {
+        this.discountPercentage = 20;
+        this.voucherApplied = true;
+        this.voucherError = "";
+      } else {
+        this.voucherApplied = false;
+        this.discountPercentage = 0;
+        this.voucherError = "Kode voucher tidak valid atau sudah kedaluwarsa.";
+      }
+    },
+    goToPayment() {
+      const user = localStorage.getItem("user");
+      if (!user) {
+        alert("Silakan login terlebih dahulu.");
+        this.$router.push("/login");
+        return;
+      }
       this.$router.push({
-        path: '/payment',
-        query: { items: this.selectedItems.join(',') }
+        path: "/payment",
+        query: { items: this.selectedItems.join(",") }
       });
-    } else {
-      alert('Silakan pilih produk yang ingin dibeli!');
     }
   }
-}
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
-
-body {
-  background-color: #f8f9fa;
-}
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.8rem;
-  color: #222;
-  margin-top: -50px;
-  letter-spacing: 1.5px;
-}
-
-.product-card {
-  border-radius: 12px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+.cart-table {
   background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow-x: auto;
 }
-.product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.12);
+.cart-summary {
+  border-radius: 8px;
 }
-
-.product-image {
-  height: 250px;
-  width: 100%;
+.img-thumbnail {
   object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  transition: transform 0.4s ease;
-}
-.product-image:hover {
-  transform: scale(1.1);
+  max-height: 70px;
 }
 
-.custom-checkbox {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  z-index: 10;
-  user-select: none;
-  border-radius: 6px;
-  background: #eee;
-  transition: background-color 0.3s ease;
-}
-.custom-checkbox:focus-within {
-  outline: 2px solid #dc3545;
-  outline-offset: 2px;
-}
-.checkbox-input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-.checkmark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.checkbox-input:checked + .checkmark {
-  background-color: #dc3545;
-  box-shadow: 0 0 10px #dc3545aa;
-}
-.checkbox-input:checked + .checkmark svg {
-  stroke-dashoffset: 0;
-  stroke: #fff;
-}
-
-.btn-outline-danger {
-  border-radius: 30px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.btn-outline-danger:hover {
-  background-color: #dc3545;
+.btn-animated-checkout {
+  width: 10px;       /* Lebar button */
+  height: 48px;       /* Tinggi button */
+  background-color: #00b14f;
   color: white;
-}
-
-/* ✅ Styling tombol pembayaran diperbarui */
-.btn-custom-payment {
-  background-color: #dc3545;
-  color: #fff;
   font-weight: 600;
-  border-radius: 30px;
-  padding: 10px 24px;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 280px;
-  margin: 0 auto;
-  box-shadow: 0 4px 14px rgba(220, 53, 69, 0.4);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  display: block;
+  font-size: 1.1rem;
+  border: none;
+  padding: 10px 2px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.btn-custom-payment:disabled {
-  background-color: #f5b3b6;
-  box-shadow: none;
-  color: #9e9e9e;
+.btn-animated-checkout:hover {
+  background-color: #029d45;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 177, 79, 0.4);
+}
+.btn-animated-checkout:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
-  transform: none;
-}
-.btn-custom-payment:hover:enabled {
-  background-color: #b02a37;
-  box-shadow: 0 8px 18px rgba(176, 42, 55, 0.5);
-  transform: translateY(-1px);
-}
-.btn-custom-payment:active:enabled {
-  transform: translateY(0);
-  box-shadow: 0 5px 12px rgba(176, 42, 55, 0.4);
-}
-
-/* Summary box */
-.summary {
-  max-width: 320px;
-  padding: 16px 20px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  margin-left: auto;
-  margin-right: auto;
-}
-.summary .badge {
-  font-size: 0.5rem;
-  padding: 3px 8px;
-  border-radius: 3px;
-}
-.summary .fw-bold {
-  font-size: 2.2rem;
 }
 </style>

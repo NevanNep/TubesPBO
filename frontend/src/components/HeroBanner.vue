@@ -5,14 +5,23 @@
         class="banner-image"
         v-for="(banner, index) in banners"
         :key="index"
-        :style="{ width: bannerWidth }"
-      >
-        <img :src="banner" alt="Banner Image" />
-      </div>
+        :style="getBannerStyle(banner)"
+      ></div>
     </div>
 
     <button class="arrow left" @click="prev">&#10094;</button>
     <button class="arrow right" @click="next">&#10095;</button>
+
+    <!-- Tambahan dots navigation -->
+    <div class="dots">
+      <span
+        v-for="(banner, index) in banners"
+        :key="index"
+        class="dot"
+        :class="{ active: index === currentIndex }"
+        @click="goToSlide(index)"
+      ></span>
+    </div>
   </section>
 </template>
 
@@ -21,11 +30,10 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      isTransitioning: false,
       banners: [
         require('@/assets/banner1.png'),
-        require('@/assets/banner2.png'),
-        require('@/assets/banner3.png'),
+        require('@/assets/banner5.jpeg'),
+        require('@/assets/banner12.png'),
       ],
       autoSlideInterval: null,
       autoSlideDelay: 4000,
@@ -34,36 +42,37 @@ export default {
   computed: {
     wrapperStyle() {
       return {
-        transform: `translateX(-${this.currentIndex * 100}%)`,
+        width: `${this.banners.length * 100}vw`,
+        transform: `translateX(-${this.currentIndex * 100}vw)`,
         transition: 'transform 0.5s ease-in-out',
-        width: `${this.banners.length * 100}%`,
         display: 'flex',
       }
-    },
-    bannerWidth() {
-      return `${100 / this.banners.length}%`
     }
   },
   methods: {
+    getBannerStyle(banner) {
+      return {
+        width: '100vw',
+        height: '450px',
+        backgroundImage: `url(${banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        backgroundRepeat: 'no-repeat',
+        flexShrink: 0,
+      }
+    },
     next() {
-      if (this.isTransitioning) return
-      this.isTransitioning = true
       this.currentIndex = (this.currentIndex + 1) % this.banners.length
-      this.unlockAfterTransition()
       this.resetAutoSlide()
     },
     prev() {
-      if (this.isTransitioning) return
-      this.isTransitioning = true
       this.currentIndex =
         (this.currentIndex - 1 + this.banners.length) % this.banners.length
-      this.unlockAfterTransition()
       this.resetAutoSlide()
     },
-    unlockAfterTransition() {
-      setTimeout(() => {
-        this.isTransitioning = false
-      }, 500)
+    goToSlide(index) {
+      this.currentIndex = index
+      this.resetAutoSlide()
     },
     startAutoSlide() {
       this.autoSlideInterval = setInterval(() => {
@@ -92,33 +101,22 @@ export default {
 
 <style scoped>
 .hero-banner {
-  position: relative;
+  max-width: 1500px;
   width: 100%;
-  overflow: hidden;
   margin: 0 auto;
-  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  height: 450px;
 }
 
 .banner-wrapper {
-  height: 450px;
+  height: 100%;
   display: flex;
 }
 
 .banner-image {
   flex-shrink: 0;
-  min-width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.banner-image img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  user-select: none;
-  display: block;
+  box-sizing: border-box;
 }
 
 /* Arrows */
@@ -151,16 +149,55 @@ export default {
   right: 1rem;
 }
 
+/* Dots navigation */
+.dots {
+  position: absolute;
+  bottom: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: 1.5px solid rgba(69, 0, 13, 0.6);
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.dot.active {
+  background: #45000d;
+  border-color: #45000d;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  .banner-wrapper {
+  .hero-banner {
     height: 250px;
+  }
+
+  .banner-image {
+    height: 250px !important;
   }
 
   .arrow {
     font-size: 1.5rem;
     width: 2.5rem;
     height: 2.5rem;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
   }
 }
 </style>

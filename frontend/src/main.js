@@ -1,11 +1,15 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router'; // Mengimpor router
+import router from './router';
+import { createPinia } from 'pinia'; // << Tambahkan ini
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap'; // jika ingin pakai komponen JS Bootstrap seperti modal, dropdown, dll
+import 'bootstrap';
 
+const app = createApp(App);
 
-createApp(App)
-  .use(router) // Menambahkan router ke aplikasi Vue
-  .mount('#app');
+const pinia = createPinia(); // << Inisialisasi Pinia
+
+app.use(pinia); // << Gunakan Pinia
+app.use(router);
+app.mount('#app');

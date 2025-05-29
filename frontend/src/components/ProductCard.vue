@@ -7,7 +7,17 @@
         -{{ product.discount }}%
       </div>
 
-      <div class="quick-view" v-if="hover">QUICK VIEW</div>
+      <div 
+        class="quick-view" 
+        v-if="hover" 
+        @click="goToDetail"
+        role="button"
+        tabindex="0"
+        @keydown.enter="goToDetail"
+        @keydown.space.prevent="goToDetail"
+      >
+        QUICK VIEW
+      </div>
     </div>
 
     <div class="product-content">
@@ -16,50 +26,48 @@
 
       <div class="price-info">
         <div class="price">
-          <span class="original" v-if="product.discount > 0">
-            Rp {{ product.price.toLocaleString('id-ID') }}
-          </span>
-          <span class="final-price">
-            Rp {{ discountedPrice.toLocaleString('id-ID') }}
-          </span>
+          <template v-if="product.discount > 0">
+            <span class="original">Rp {{ product.price.toLocaleString('id-ID') }}</span>
+            <span class="final-price">Rp {{ discountedPrice.toLocaleString('id-ID') }}</span>
+          </template>
+          <template v-else>
+            <span class="final-price no-discount">Rp {{ product.price.toLocaleString('id-ID') }}</span>
+          </template>
         </div>
-
-        <!-- Ganti bagian button cart-btn dengan SVG ini -->
-        <button
-  class="cart-btn"
-  @click.stop="addToCart"
-  :aria-label="`Tambah ${product.name} ke keranjang`"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="cart-icon"
-    viewBox="0 0 24 24"
-  >
-    <circle cx="9" cy="21" r="1" />
-    <circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
-  </svg>
-</button>
-
-
-
       </div>
 
-      <div class="rating">
-        <span
-          v-for="n in 5"
-          :key="n"
-          class="star"
-          :class="{ filled: n <= product.rating }"
-          >★</span
+      <div class="rating-cart-wrapper">
+        <div class="rating">
+          <span
+            v-for="n in 5"
+            :key="n"
+            class="star"
+            :class="{ filled: n <= product.rating }"
+          >★</span>
+        </div>
+
+        <button
+          class="cart-btn"
+          @click.stop="addToCart"
+          :aria-label="`Tambah ${product.name} ke keranjang`"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="cart-icon"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+          </svg>
+        </button>
       </div>
 
       <div class="divider"></div>
@@ -69,12 +77,16 @@
 </template>
 
 <script>
+import { useCartStore } from '@/Stores/cartStore'; // sesuaikan path jika perlu
+import { mapStores } from 'pinia';
+
 export default {
   props: {
     product: {
       type: Object,
       required: true,
       default: () => ({
+        id: null,
         brand: '',
         name: '',
         image: '',
@@ -90,6 +102,7 @@ export default {
     };
   },
   computed: {
+    ...mapStores(useCartStore),
     discountedPrice() {
       return this.product.discount > 0
         ? Math.round(this.product.price * (1 - this.product.discount / 100))
@@ -98,7 +111,18 @@ export default {
   },
   methods: {
     addToCart() {
-      alert(`'${this.product.name}' ditambahkan ke keranjang.`);
+      const item = {
+        id: this.product.id,
+        name: this.product.name,
+        price: this.discountedPrice,
+        image: this.product.image,
+      };
+      this.cartStore.addToCart(item);
+    },
+    goToDetail() {
+      if (this.product.id !== null) {
+        this.$router.push({ name: 'ProductDetail', params: { id: this.product.id } });
+      }
     },
   },
 };
@@ -122,7 +146,6 @@ export default {
 .image-container {
   position: relative;
   height: 240px;
-  /* Hilangkan padding dan background abu-abu */
   padding: 0;
   background: transparent;
   display: flex;
@@ -135,8 +158,8 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0; /* hilangkan radius kalau mau full */
-  box-shadow: none; /* hilangkan bayangan supaya bersih */
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .discount-badge {
@@ -147,7 +170,7 @@ export default {
   height: 32px;
   background: #c62828;
   color: white;
-  font-size: 0.85rem;
+  font-size: 0.65rem;
   font-weight: 700;
   display: flex;
   justify-content: center;
@@ -205,8 +228,7 @@ export default {
 
 .price-info {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin-top: 0.5rem;
 }
 
@@ -226,8 +248,28 @@ export default {
 .final-price {
   font-size: 1rem;
   font-weight: 700;
-  color:  #45000D;
-;
+  color: #45000D;
+}
+
+.final-price.no-discount {
+  color: #222; /* Warna gelap jika tanpa diskon */
+}
+
+/* Wrapper rating dan cart agar sejajar horizontal */
+.rating-cart-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.star {
+  color: #ddd;
+  font-size: 1rem;
+}
+
+.star.filled {
+  color: #EDBA6B;
 }
 
 .cart-btn {
@@ -244,7 +286,6 @@ export default {
   width: 22px;
   height: 22px;
   stroke: #45000D;
-;
   transition: stroke 0.3s ease;
 }
 
@@ -252,22 +293,9 @@ export default {
   stroke: #9b1c1c;
 }
 
-.rating {
-  margin-top: 8px;
-}
-
-.star {
-  color: #ddd;
-  font-size: 1rem;
-}
-
-.star.filled {
-  color: #f4c110;
-}
-
 .divider {
   height: 4px;
-  background: #c62828;
+  background: #45000D;
   margin: 10px 0 5px;
   border-radius: 2px;
 }

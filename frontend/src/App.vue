@@ -10,30 +10,26 @@
     </div>
 
     <!-- Footer -->
-    <footer>
-      <div class="container text-center">
-        <p>&copy; 2025 SCENTIFY - All Rights Reserved</p>
-        <div>
-          <a href="#" class="footer-link">Contact</a>
-          <a href="#" class="footer-link">About</a>
-          <a href="#" class="footer-link">Terms</a>
-        </div>
-        <div class="mt-2">
-          <a href="#" class="footer-link"><i class="bi bi-facebook"></i> Facebook</a>
-          <a href="#" class="footer-link"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-        </div>
-      </div>
-    </footer>
+   
+     <div>
+     <!-- Konten utama -->
+       <MainFooter />
+    </div>
+
+
   </div>
 </template>
 
 <script>
 import MainNavbar from "@/components/MainNavbar.vue";
+import MainFooter from '@/components/MainFooter.vue';
+
 
 export default {
   name: "App",
   components: {
     MainNavbar,
+    MainFooter
   },
   data() {
     return {

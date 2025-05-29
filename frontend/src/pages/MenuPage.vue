@@ -23,27 +23,13 @@
         </div>
       </div>
 
-      <button class="lihat-produk-btn">Lihat Produk</button>
+      <button class="lihat-produk-btn" @click="lihatProduk">Lihat Produk</button>
     </section>
 
-    <!-- Shop by Categories (Men, Women, Unisex) -->
-    <section class="categorized-products">
+    <!-- Shop by Categories -->
+    <section class="shop-by-categories">
       <h2 class="section-title">Shop by Categories</h2>
-
-      <div
-        class="category-group"
-        v-for="(products, category) in categorizedProducts"
-        :key="category"
-      >
-        <h3 class="category-title">{{ category }}</h3>
-        <div class="products">
-          <ProductCard
-            v-for="product in products"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-      </div>
+      <ShopByCategories />
     </section>
   </div>
 </template>
@@ -51,11 +37,22 @@
 <script>
 import HeroBanner from '../components/HeroBanner.vue'
 import ProductCard from '../components/ProductCard.vue'
+import ShopByCategories from '@/components/ShopbyCategories.vue'
+
+import hitamImg from '@/assets/hitamm.jpeg'
+import parfumGayImg from '@/assets/parfumgay.png'
+import parfumCeweImg from '@/assets/parfumcewecakep.png'
+import toxicImg from '@/assets/toxic.png'
+import avienaImg from '@/assets/aviena.jpeg'
+import bohemianImg from '@/assets/bohemian.png'
+import aquaImg from '@/assets/aqua.jpeg'
+import merahMeronaImg from '@/assets/merahmerona.png'
 
 export default {
   components: {
     HeroBanner,
-    ProductCard
+    ProductCard,
+    ShopByCategories
   },
   data() {
     return {
@@ -67,7 +64,7 @@ export default {
           price: 2350000,
           discount: 25,
           rating: 4,
-          image: require('@/assets/hitamm.jpeg'),
+          image: hitamImg,
           category: 'Unisex',
           isNew: false
         },
@@ -78,7 +75,7 @@ export default {
           price: 1400000,
           discount: 50,
           rating: 4,
-          image: require('@/assets/parfumgay.png'),
+          image: parfumGayImg,
           category: 'Women',
           isNew: false
         },
@@ -89,7 +86,7 @@ export default {
           price: 2390000,
           discount: 44,
           rating: 5,
-          image: require('@/assets/parfumcewecakep.png'),
+          image: parfumCeweImg,
           category: 'Men',
           isNew: false
         },
@@ -100,7 +97,7 @@ export default {
           price: 1990000,
           discount: 10,
           rating: 5,
-          image: require('@/assets/toxic.png'),
+          image: toxicImg,
           category: 'Unisex',
           isNew: false
         },
@@ -111,7 +108,7 @@ export default {
           price: 1870000,
           discount: 0,
           rating: 5,
-          image: require('@/assets/aviena.jpeg'),
+          image: avienaImg,
           category: 'Men',
           isNew: false
         },
@@ -122,7 +119,7 @@ export default {
           price: 2400000,
           discount: 0,
           rating: 5,
-          image: require('@/assets/bohemian.png'),
+          image: bohemianImg,
           category: 'Men',
           isNew: false
         },
@@ -133,7 +130,7 @@ export default {
           price: 1870000,
           discount: 0,
           rating: 5,
-          image: require('@/assets/aqua.jpeg'),
+          image: aquaImg,
           category: 'Men',
           isNew: false
         },
@@ -144,70 +141,11 @@ export default {
           price: 1870000,
           discount: 0,
           rating: 5,
-          image: require('@/assets/merahmerona.png'),
+          image: merahMeronaImg,
           category: 'Women',
           isNew: false
         }
-      ],
-      products: [
-        {
-          id: 1,
-          name: 'Addison Rae Effortless AF',
-          brand: 'ADDISON RAE',
-          volume: 'EDP 100 ml',
-          price: 850000,
-          discount: 15,
-          isNew: true,
-          image: require('@/assets/hitamm.jpeg'),
-          rating: 0,
-          category: 'Women'
-        },
-        {
-          id: 2,
-          name: 'Marc Jacobs Perfect Elixir',
-          brand: 'MARC JACOBS',
-          volume: 'EDP 100 ml',
-          price: 2370000,
-          discount: 0,
-          isNew: true,
-          image: require('@/assets/hitamm.jpeg'),
-          rating: 4,
-          category: 'Women'
-        },
-        {
-          id: 3,
-          name: 'Stronger With You Intensely',
-          brand: 'GIORGIO ARMANI',
-          volume: 'EDP 100 ml',
-          price: 1870000,
-          discount: 0,
-          isNew: false,
-          image: require('@/assets/hitamm.jpeg'),
-          rating: 5,
-          category: 'Men'
-        },
-        {
-          id: 4,
-          name: 'Essential Parfums Bois Imperial',
-          brand: 'ESSENTIAL PARFUMS',
-          volume: 'EDP 100 ml',
-          price: 1990000,
-          discount: 10,
-          isNew: false,
-          image: require('@/assets/hitamm.jpeg'),
-          rating: 5,
-          category: 'Unisex'
-        }
       ]
-    }
-  },
-  computed: {
-    categorizedProducts() {
-      return {
-        Men: this.products.filter(p => p.category === 'Men'),
-        Women: this.products.filter(p => p.category === 'Women'),
-        Unisex: this.products.filter(p => p.category === 'Unisex')
-      }
     }
   },
   methods: {
@@ -216,6 +154,9 @@ export default {
     },
     scrollRight() {
       this.$refs.bestSellerScroll.scrollBy({ left: 300, behavior: 'smooth' })
+    },
+    lihatProduk() {
+      this.$router.push('/products')
     }
   }
 }
@@ -290,25 +231,16 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.lihat-produk-btn:hover {
+  background-color: #45000D;
+  color: #fff;
 }
 
-/* Shop by Categories */
-.categorized-products {
+/* Kamu bisa tambahkan styling untuk .shop-by-categories di sini */
+.shop-by-categories {
   margin-top: 4rem;
   padding: 0 1rem;
-}
-.category-group {
-  margin-bottom: 2rem;
-}
-.category-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #2e1a1a;
-}
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
 }
 </style>

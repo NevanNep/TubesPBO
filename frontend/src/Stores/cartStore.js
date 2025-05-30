@@ -26,21 +26,19 @@ export const useCartStore = defineStore('cart', {
       localStorage.setItem('cartItems', JSON.stringify(this.items))
     },
 
-    addToCart(product) {
+    addToCart(product, quantity = 1) {
       // Cek login dulu
       const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
       if (!isLoggedIn) {
         alert('Silakan login terlebih dahulu sebelum menambah produk ke keranjang.')
-        // Karena ini di store, tidak bisa akses this.$router langsung.
-        // Jadi, bisa pakai event atau return false supaya komponen yang panggil bisa handle redirect
         return false
       }
 
       const existing = this.items.find(item => item.id === product.id)
       if (existing) {
-        existing.quantity++
+        existing.quantity += quantity
       } else {
-        this.items.push({ ...product, quantity: 1 })
+        this.items.push({ ...product, quantity })
       }
       this.saveToLocalStorage()
       return true
@@ -52,6 +50,7 @@ export const useCartStore = defineStore('cart', {
         if (this.items[index].quantity > 1) {
           this.items[index].quantity--
         } else {
+          // Pakai splice agar reaktif
           this.items.splice(index, 1)
         }
         this.saveToLocalStorage()
@@ -59,8 +58,12 @@ export const useCartStore = defineStore('cart', {
     },
 
     removeItem(productId) {
-      this.items = this.items.filter(item => item.id !== productId)
-      this.saveToLocalStorage()
+      const index = this.items.findIndex(item => item.id === productId)
+      if (index !== -1) {
+        // Pakai splice agar reaktif
+        this.items.splice(index, 1)
+        this.saveToLocalStorage()
+      }
     },
 
     clearCart() {

@@ -6,7 +6,7 @@ import LoginPage from '../pages/LoginPage.vue'; // Halaman login
 import RegisterPage from '../pages/RegisterPage.vue'; // Halaman register
 import ReviewPage from '@/pages/ReviewPage.vue'; // Halaman review
 import ProfilePage from '@/pages/ProfilePage.vue';
-
+import CategoryPage from '@/pages/CategoryPage.vue';
 
 
 
@@ -23,8 +23,13 @@ const routes = [
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('@/pages/ProductDetail.vue')
+  },
+  {
+    path: '/category/:type',
+    name: 'CategoryPage',
+    component: CategoryPage,
+    props: true
   }
-  
 ];
 
 const router = createRouter({

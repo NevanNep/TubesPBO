@@ -35,18 +35,12 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useProductStore } from '@/Stores/Product'
+
 import HeroBanner from '../components/HeroBanner.vue'
 import ProductCard from '../components/ProductCard.vue'
 import ShopByCategories from '@/components/ShopbyCategories.vue'
-
-import hitamImg from '@/assets/hitamm.jpeg'
-import parfumGayImg from '@/assets/parfumgay.png'
-import parfumCeweImg from '@/assets/parfumcewecakep.png'
-import toxicImg from '@/assets/toxic.png'
-import avienaImg from '@/assets/aviena.jpeg'
-import bohemianImg from '@/assets/bohemian.png'
-import aquaImg from '@/assets/aqua.jpeg'
-import merahMeronaImg from '@/assets/merahmerona.png'
 
 export default {
   components: {
@@ -54,109 +48,28 @@ export default {
     ProductCard,
     ShopByCategories
   },
-  data() {
-    return {
-      bestSellers: [
-        {
-          id: 101,
-          brand: 'YVES SAINT LAURENT',
-          name: 'Yves Saint Laurent MYSLF EDP 100 ml',
-          price: 2350000,
-          discount: 25,
-          rating: 4,
-          image: hitamImg,
-          category: 'Unisex',
-          isNew: false
-        },
-        {
-          id: 102,
-          brand: 'SAMPAR',
-          name: 'Sampar Prodigal Pen 6 ml',
-          price: 1400000,
-          discount: 50,
-          rating: 4,
-          image: parfumGayImg,
-          category: 'Women',
-          isNew: false
-        },
-        {
-          id: 103,
-          brand: 'YVES ROCHER',
-          name: 'Yves Rocher Anti Dandruff Shampoo 300 ml',
-          price: 2390000,
-          discount: 44,
-          rating: 5,
-          image: parfumCeweImg,
-          category: 'Men',
-          isNew: false
-        },
-        {
-          id: 104,
-          brand: 'ESSENTIAL PARFUMS',
-          name: 'Essential Parfums Bois Imperial EDP 100 ml',
-          price: 1990000,
-          discount: 10,
-          rating: 5,
-          image: toxicImg,
-          category: 'Unisex',
-          isNew: false
-        },
-        {
-          id: 105,
-          brand: 'GIORGIO ARMANI',
-          name: 'Emporio Armani Stronger With You Intensely EDP 100 ml',
-          price: 1870000,
-          discount: 0,
-          rating: 5,
-          image: avienaImg,
-          category: 'Men',
-          isNew: false
-        },
-        {
-          id: 106,
-          brand: 'BOHEMIAN PARFUME',
-          name: 'Bohemian Taste With You EDP 250 ml',
-          price: 2400000,
-          discount: 0,
-          rating: 5,
-          image: bohemianImg,
-          category: 'Men',
-          isNew: false
-        },
-        {
-          id: 107,
-          brand: 'GIORGIO ARMANI',
-          name: 'Emporio Armani Stronger With You Intensely EDP 100 ml',
-          price: 1870000,
-          discount: 0,
-          rating: 5,
-          image: aquaImg,
-          category: 'Men',
-          isNew: false
-        },
-        {
-          id: 108,
-          brand: 'GIORGIO ARMANI',
-          name: 'Emporio Armani Stronger With You Intensely EDP 100 ml',
-          price: 1870000,
-          discount: 0,
-          rating: 5,
-          image: merahMeronaImg,
-          category: 'Women',
-          isNew: false
-        }
-      ]
+  setup() {
+    const productStore = useProductStore()
+
+    const bestSellers = computed(() => productStore.getBestSellers)
+
+    const scrollLeft = () => {
+      document.querySelector('.best-seller-grid').scrollBy({ left: -300, behavior: 'smooth' })
     }
-  },
-  methods: {
-    scrollLeft() {
-      this.$refs.bestSellerScroll.scrollBy({ left: -300, behavior: 'smooth' })
-    },
-    scrollRight() {
-      this.$refs.bestSellerScroll.scrollBy({ left: 300, behavior: 'smooth' })
-    },
-    lihatProduk() {
-      this.$router.push('/products')
+
+    const scrollRight = () => {
+      document.querySelector('.best-seller-grid').scrollBy({ left: 300, behavior: 'smooth' })
+    }
+
+    const lihatProduk = () => {
+      window.location.href = '/products'
+    }
+
+    return {
+      bestSellers,
+      scrollLeft,
+      scrollRight,
+      lihatProduk
     }
   }
 }
@@ -238,7 +151,7 @@ export default {
   color: #fff;
 }
 
-/* Kamu bisa tambahkan styling untuk .shop-by-categories di sini */
+/* Shop by Categories */
 .shop-by-categories {
   margin-top: 4rem;
   padding: 0 1rem;

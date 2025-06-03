@@ -1,103 +1,73 @@
 package com.scentify.backend.model;
 
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 public class Order {
-    private String orderId;
+
+    @Id
+    private String id; // pakai String karena format "ORD123456"
+
+    @ManyToOne
+    @JoinColumn(name = "buyer_id")
     private Buyer buyer;
+
     private String status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
     private Payment payMethod;
+
     private double totalAmount;
+
     private Date orderDate;
-    private List<Product> items;
 
-    public Order() {
-    }
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items;
 
-    public Order(String orderId, Buyer buyer, String status, Payment payMethod, double totalAmount, Date orderDate, List<Product> items) {
-        this.orderId = orderId;
-        this.buyer = buyer;
-        this.status = status;
-        this.payMethod = payMethod;
-        this.totalAmount = totalAmount;
-        this.orderDate = orderDate;
+    public Order() {}
+
+    // getter setter id sebagai String
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    // getter setter lainnya ...
+
+    public Buyer getBuyer() { return buyer; }
+    public void setBuyer(Buyer buyer) { this.buyer = buyer; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public Payment getPayMethod() { return payMethod; }
+    public void setPayMethod(Payment payMethod) { this.payMethod = payMethod; }
+
+    public double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+
+    public Date getOrderDate() { return orderDate; }
+    public void setOrderDate(Date orderDate) { this.orderDate = orderDate; }
+
+    public List<OrderItem> getItems() { return items; }
+    public void setItems(List<OrderItem> items) {
         this.items = items;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public Buyer getBuyer() {
-        return buyer;
-    }
-
-    public void setBuyer(Buyer buyer) {
-        this.buyer = buyer;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Payment getPayMethod() {
-        return payMethod;
-    }
-
-    public void setPayMethod(Payment payMethod) {
-        this.payMethod = payMethod;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public List<Product> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Product> items) {
-        this.items = items;
+        // Set back-reference ke Order di setiap OrderItem
+        if(items != null) {
+            for(OrderItem item : items) {
+                item.setOrder(this);
+            }
+        }
     }
 
     public boolean processPayment() {
-        // Contoh implementasi sederhana
         if (payMethod != null && totalAmount > 0) {
             this.status = "PAID";
             return true;
         }
         this.status = "PAYMENT_FAILED";
         return false;
-    }
-
-    public String generateInvoice() {
-        // Contoh implementasi sederhana
-        return "Invoice\nOrder ID: " + orderId +
-               "\nBuyer: " + (buyer != null ? buyer.toString() : "N/A") +
-               "\nTotal: " + totalAmount +
-               "\nStatus: " + status +
-               "\nDate: " + (orderDate != null ? orderDate.toString() : "N/A") +
-               "\nItems: " + (items != null ? items.toString() : "N/A");
     }
 }

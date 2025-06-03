@@ -20,8 +20,8 @@ public class Buyer extends User {
         // constructor kosong untuk JPA
     }
 
-    public Buyer(Long id, String nama, String email, String password, String alamat) {
-        super(id, nama, email, password, alamat);
+    public Buyer(Long id, String nama, String email, String password, String alamat,String role) {
+        super(id, nama, email, password, alamat,role);
     }
 
     public void addToCart(String productId, int quantity) {

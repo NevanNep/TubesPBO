@@ -1,4 +1,5 @@
 package com.scentify.backend.model;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -16,16 +17,20 @@ public class User implements Loginable {
     private String password;
     private String alamat;
 
+    @Column(nullable = false)
+    private String role; // "ADMIN" atau "BUYER"
+
     public User() {
         // constructor kosong diperlukan oleh JPA
     }
 
-    public User(Long id, String nama, String email, String password, String alamat) {
+    public User(Long id, String nama, String email, String password, String alamat, String role) {
         this.id = id;
         this.nama = nama;
         this.email = email;
         this.password = password;
         this.alamat = alamat;
+        this.role = role;
     }
 
     @Override
@@ -53,4 +58,7 @@ public class User implements Loginable {
 
     public String getAlamat() { return alamat; }
     public void setAlamat(String alamat) { this.alamat = alamat; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

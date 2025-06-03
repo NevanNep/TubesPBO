@@ -2,7 +2,6 @@ package com.scentify.backend.controller;
 
 import com.scentify.backend.model.Product;
 import com.scentify.backend.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,18 +9,24 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    // Get all products
-    @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    // Gunakan constructor injection untuk lebih baik
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
-    // Get product by ID
+    // Ambil semua produk
+    @GetMapping
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        return ResponseEntity.ok(products);
+    }
+
+    // Ambil produk berdasarkan productId
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
         Product product = productService.getProductById(id);
@@ -32,30 +37,31 @@ public class ProductController {
         }
     }
 
-    // Create new product
+    // Tambah produk baru
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+        Product created = productService.createProduct(product);
+        return ResponseEntity.ok(created);
     }
 
-    // Update product
+    // Update produk
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product updatedProduct) {
-        Product product = productService.updateProduct(id, updatedProduct);
-        if (product != null) {
-            return ResponseEntity.ok(product);
+        Product updated = productService.updateProduct(id, updatedProduct);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Delete product
+    // Hapus produk
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
-        if (productService.deleteProduct(id)) {
+        boolean deleted = productService.deleteProduct(id);
+        if (deleted) {
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
     }
 }

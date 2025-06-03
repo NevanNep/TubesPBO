@@ -1,52 +1,60 @@
 package com.scentify.backend.controller;
 
 import com.scentify.backend.model.Cart;
-import com.scentify.backend.model.Product;
 import com.scentify.backend.service.CartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cart")
+@CrossOrigin
 public class CartController {
 
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
 
-    @GetMapping
-    public ResponseEntity<Cart> getCart() {
-        return ResponseEntity.ok(cartService.getCart());
+    public CartController(CartService cartService) {
+        this.cartService = cartService;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addItem(@RequestBody CartItemRequest request) {
-        cartService.addItem(request.getProduct(), request.getQuantity());
+    // Dapatkan cart berdasarkan buyerId
+    @GetMapping("/{buyerId}")
+    public ResponseEntity<Cart> getCart(@PathVariable Long buyerId) {
+        return ResponseEntity.ok(cartService.getCart(buyerId));
+    }
+
+    // Tambah item ke cart buyer tertentu
+    @PostMapping("/{buyerId}/add")
+    public ResponseEntity<String> addItem(
+            @PathVariable Long buyerId,
+            @RequestBody CartItemRequest request) {
+        cartService.addItem(buyerId, request.getProductId(), request.getQuantity());
         return ResponseEntity.ok("Item added to cart.");
     }
 
-    @GetMapping("/total")
-    public ResponseEntity<Double> getTotal() {
-        return ResponseEntity.ok(cartService.calculateTotal());
+    // Dapatkan total harga cart buyer tertentu
+    @GetMapping("/{buyerId}/total")
+    public ResponseEntity<Double> getTotal(@PathVariable Long buyerId) {
+        return ResponseEntity.ok(cartService.calculateTotal(buyerId));
     }
 
-    @PostMapping("/clear")
-    public ResponseEntity<String> clearCart() {
-        cartService.clearCart();
+    // Kosongkan cart buyer tertentu
+    @PostMapping("/{buyerId}/clear")
+    public ResponseEntity<String> clearCart(@PathVariable Long buyerId) {
+        cartService.clearCart(buyerId);
         return ResponseEntity.ok("Cart cleared.");
     }
 
-    // DTO untuk request body
+    // DTO request body hanya mengandung productId dan quantity
     public static class CartItemRequest {
-        private Product product;
+        private String productId;
         private int quantity;
 
-        public Product getProduct() {
-            return product;
+        public String getProductId() {
+            return productId;
         }
 
-        public void setProduct(Product product) {
-            this.product = product;
+        public void setProductId(String productId) {
+            this.productId = productId;
         }
 
         public int getQuantity() {

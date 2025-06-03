@@ -9,8 +9,8 @@ public class Admin extends User {
         // constructor kosong untuk JPA
     }
 
-    public Admin(Long id, String nama, String email, String password, String alamat) {
-        super(id, nama, email, password, alamat);
+    public Admin(Long id, String nama, String email, String password, String alamat,String role) {
+        super(id, nama, email, password, alamat,role);
     }
 
     public void deleteProduct(String productId) {

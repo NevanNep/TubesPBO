@@ -2,7 +2,6 @@ package com.scentify.backend.service;
 
 import com.scentify.backend.model.User;
 import com.scentify.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -10,10 +9,23 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User registerUser(User user) {
+        // Cek apakah email sudah digunakan
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email sudah digunakan");
+        }
+
+        // Jika role belum di-set, beri default "BUYER"
+        if (user.getRole() == null) {
+            user.setRole("BUYER");
+        }
+
         return userRepository.save(user);
     }
 

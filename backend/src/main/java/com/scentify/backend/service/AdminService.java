@@ -19,6 +19,11 @@ public class AdminService {
         this.productRepo = productRepo;
     }
 
+    // Simpan admin baru
+    public Admin saveAdmin(Admin admin) {
+        return adminRepo.save(admin);
+    }
+
     public Product addProduct(Product product) {
         return productRepo.save(product);
     }

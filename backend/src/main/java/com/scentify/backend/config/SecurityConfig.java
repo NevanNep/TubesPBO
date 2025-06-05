@@ -27,7 +27,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Boleh akses tanpa token untuk auth, register admin dan register buyer
-                .requestMatchers("/api/auth/**", "/api/admin/register", "/api/buyer/register").permitAll()
+                .requestMatchers("/api/auth/**", "/api/admin/register", "/api/buyer/register","/api/products").permitAll()
                 // selain itu wajib autentikasi/token
                 .anyRequest().authenticated()
             )

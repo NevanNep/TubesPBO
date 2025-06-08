@@ -7,6 +7,7 @@ import RegisterPage from '../pages/RegisterPage.vue'; // Halaman register
 import ReviewPage from '@/pages/ReviewPage.vue'; // Halaman review
 import ProfilePage from '@/pages/ProfilePage.vue';
 import CategoryPage from '@/pages/CategoryPage.vue';
+import AdminPage from '@/pages/AdminPage.vue'
 
 
 
@@ -19,6 +20,7 @@ const routes = [
   { path: '/register', component: RegisterPage },
   { path: '/reviews', component: ReviewPage },
   { path: '/profile', component: ProfilePage},
+  { path: '/admin', component: AdminPage},
   {
     path: '/product/:id',
     name: 'ProductDetail',
@@ -29,8 +31,15 @@ const routes = [
     name: 'CategoryPage',
     component: CategoryPage,
     props: true
+  },
+  {
+    path: '/admin',
+    name: 'AdminPage',
+    component: AdminPage
   }
 ];
+
+
 
 const router = createRouter({
   history: createWebHistory(),

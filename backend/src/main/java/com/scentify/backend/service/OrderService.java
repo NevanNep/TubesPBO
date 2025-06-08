@@ -46,7 +46,7 @@ public class OrderService {
             long qty = productCount.getOrDefault(product.getProductId(), 0L);
 
             // Cek stok produk cukup
-            if (product.getStock() < qty) {
+            if (product.getStock() < qty) { 
                 throw new RuntimeException("Stok produk " + product.getProductId() + " tidak cukup");
             }
 

@@ -37,6 +37,14 @@
           placeholder="Masukkan password"
         />
       </div>
+      <div class="mb-3">
+       <label for="role">Login sebagai:</label>
+        <select v-model="form.role" class="form-control" required>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
       <div class="mb-4">
         <label for="confirmPassword" class="form-label">Konfirmasi Password:</label>
         <input
@@ -63,13 +71,16 @@
 
 <script>
 export default {
-  data() {
-    return {
-      email: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
-    };
+data() {
+  return {
+    email: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    form: {
+    role: 'user'
+    }
+  };
   },
   methods: {
     register() {
@@ -78,6 +89,7 @@ export default {
           email: this.email,
           username: this.username,
           password: this.password,
+          role: this.form.role
         };
 
         localStorage.setItem('user', JSON.stringify(user));

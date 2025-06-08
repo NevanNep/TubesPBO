@@ -18,6 +18,15 @@
         />
       </div>
 
+      <div class="mb-3">
+        <label for="role">Login sebagai:</label>
+        <select v-model="form.role" class="form-control" required>
+           <option value="user">User</option>
+           <option value="admin">Admin</option>
+        </select>
+      </div>
+
+
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold">Password</label>
         <input
@@ -50,11 +59,13 @@ export default {
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      form: {
+        role: 'user' // default ke user
+      }
     };
   },
   mounted() {
-    // Jika sudah login, redirect ke halaman utama
     if (localStorage.getItem('isLoggedIn') === 'true') {
       this.$router.push('/');
     }
@@ -63,7 +74,7 @@ export default {
     login() {
       const storedUser = JSON.parse(localStorage.getItem('user'));
 
-      if (!this.email || !this.password) {
+      if (!this.email || !this.password || !this.form.role) {
         alert('Mohon isi semua field.');
         return;
       }
@@ -71,21 +82,29 @@ export default {
       if (
         storedUser &&
         storedUser.email === this.email &&
-        storedUser.password === this.password
+        storedUser.password === this.password &&
+        storedUser.role === this.form.role // cocokkan role juga
       ) {
         alert('Login berhasil!');
 
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
+        localStorage.setItem('userRole', storedUser.role);
 
-        this.$router.push('/');
+        // Arahkan berdasarkan role
+        if (storedUser.role === 'admin') {
+          this.$router.push('/admin');
+        } else {
+          this.$router.push('/');
+        }
       } else {
-        alert('Email atau password salah.');
+        alert('Email, password, atau role salah.');
       }
     }
   }
 };
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');

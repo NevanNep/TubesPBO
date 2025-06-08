@@ -16,6 +16,9 @@
         <router-link to="#">SALE</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
+
+        <!-- Menu Tambahan untuk Admin -->
+        <router-link v-if="user && user.role === 'admin'" to="/admin">ADMIN</router-link>
       </nav>
 
       <!-- Menu Kanan -->
@@ -69,16 +72,19 @@ export default {
       isLoggedIn: false,
       dropdownOpen: false,
       username: '',
+      user: null
     };
   },
   mounted() {
     this.checkLoginStatus();
-    window.addEventListener("storage", this.checkLoginStatus); // sync login status antar tab
+    window.addEventListener("storage", this.checkLoginStatus);
   },
   methods: {
     checkLoginStatus() {
       this.isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
       this.username = localStorage.getItem("username") || '';
+      const userData = localStorage.getItem("user");
+      this.user = userData ? JSON.parse(userData) : null;
     },
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
@@ -86,8 +92,10 @@ export default {
     logout() {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("username");
+      localStorage.removeItem("user");
       this.isLoggedIn = false;
       this.dropdownOpen = false;
+      this.user = null;
       this.$router.push("/");
     }
   },
@@ -98,6 +106,7 @@ export default {
 </script>
 
 <style scoped>
+/* CSS sesuai yang Anda berikan sebelumnya (tidak berubah) */
 .navbar {
   background-color: #45000D;
   font-family: "Poppins", sans-serif;
@@ -196,7 +205,6 @@ export default {
   margin: 0 10px;
 }
 
-/* Cart & Profile icon link */
 .profile-link,
 .cart-link {
   display: flex;
@@ -211,7 +219,6 @@ export default {
   transform: scale(1.1);
 }
 
-/* Profile Dropdown */
 .profile-dropdown {
   position: relative;
   cursor: pointer;

@@ -16,9 +16,13 @@
         <router-link to="#">SALE</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
-
-        <!-- Menu Tambahan untuk Admin -->
-        <router-link v-if="user && user.role === 'admin'" to="/admin">ADMIN</router-link>
+        <router-link
+          v-if="isLoggedIn && userRole === 'admin'"
+          to="/admin"
+          style="color: #ffdd99"
+        >
+          ADMIN
+        </router-link>
       </nav>
 
       <!-- Menu Kanan -->
@@ -72,7 +76,7 @@ export default {
       isLoggedIn: false,
       dropdownOpen: false,
       username: '',
-      user: null
+      userRole: ''
     };
   },
   mounted() {
@@ -83,8 +87,7 @@ export default {
     checkLoginStatus() {
       this.isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
       this.username = localStorage.getItem("username") || '';
-      const userData = localStorage.getItem("user");
-      this.user = userData ? JSON.parse(userData) : null;
+      this.userRole = localStorage.getItem("userRole") || '';
     },
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
@@ -92,10 +95,10 @@ export default {
     logout() {
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("username");
-      localStorage.removeItem("user");
+      localStorage.removeItem("userRole");
       this.isLoggedIn = false;
+      this.userRole = '';
       this.dropdownOpen = false;
-      this.user = null;
       this.$router.push("/");
     }
   },

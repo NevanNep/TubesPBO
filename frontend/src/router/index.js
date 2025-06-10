@@ -7,7 +7,10 @@ import RegisterPage from '../pages/RegisterPage.vue'; // Halaman register
 import ReviewPage from '@/pages/ReviewPage.vue'; // Halaman review
 import ProfilePage from '@/pages/ProfilePage.vue';
 import CategoryPage from '@/pages/CategoryPage.vue';
-import AdminPage from '@/pages/AdminPage.vue'
+import AdminView from '@/pages/AdminDetail.vue';
+import AdminDetail from '@/pages/AdminView.vue';
+import AddProduct from '@/pages/AddProduct.vue';
+
 
 
 
@@ -20,7 +23,11 @@ const routes = [
   { path: '/register', component: RegisterPage },
   { path: '/reviews', component: ReviewPage },
   { path: '/profile', component: ProfilePage},
-  { path: '/admin', component: AdminPage},
+  { path: '/admin', component: AdminView},
+  { path: '/admindetail', component: AdminDetail},
+  { path: '/addproduct', component: AddProduct},
+
+
   {
     path: '/product/:id',
     name: 'ProductDetail',
@@ -32,11 +39,22 @@ const routes = [
     component: CategoryPage,
     props: true
   },
-  {
-    path: '/admin',
-    name: 'AdminPage',
-    component: AdminPage
-  }
+ {
+  path: '/admin',
+  component: () => import('@/pages/AdminView.vue'),
+  meta: { requiresAdmin: true }
+},
+{
+  path: '/admin/detail/:id',
+  component: () => import('@/pages/AdminDetail.vue'),
+  meta: { requiresAdmin: true }
+},
+{
+  path: '/admin/add',
+  component: () => import('@/pages/AddProduct.vue'),
+  meta: { requiresAdmin: true }
+}
+
 ];
 
 

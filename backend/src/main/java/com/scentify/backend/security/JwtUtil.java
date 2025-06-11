@@ -53,7 +53,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("role", role)  // simpan role string yang valid
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 jam
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) 
                 .signWith(SECRET_KEY) // pakai SecretKey langsung
                 .compact();
     }

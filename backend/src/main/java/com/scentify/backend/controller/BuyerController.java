@@ -22,12 +22,14 @@ public class BuyerController {
     @PostMapping("/register")
     public ResponseEntity<?> registerBuyer(@RequestBody Buyer buyer) {
         try {
+            buyer.setRole("BUYER"); // Set paksa role buyer
             Buyer savedBuyer = buyerService.saveBuyer(buyer);
             return ResponseEntity.ok(savedBuyer);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     // Ambil data buyer berdasarkan id, response 404 jika tidak ditemukan
     @GetMapping("/{id}")

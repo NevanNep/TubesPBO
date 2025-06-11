@@ -20,9 +20,11 @@ public class AdminController {
     // Endpoint untuk register admin baru
     @PostMapping("/register")
     public ResponseEntity<?> registerAdmin(@RequestBody Admin admin) {
+        admin.setRole("ADMIN"); // Set paksa role admin
         Admin savedAdmin = adminService.saveAdmin(admin);
         return ResponseEntity.ok(savedAdmin);
     }
+
 
     // Tambah produk baru
     @PostMapping("/products")

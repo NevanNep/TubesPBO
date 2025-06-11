@@ -2,11 +2,7 @@
   <div v-if="product" class="product-detail-container">
     <!-- Gambar Produk -->
     <div class="image-section">
-      <img
-        :src="product.image"
-        :alt="product.name"
-        class="main-image"
-      />
+      <img :src="product.image" :alt="product.name" class="main-image" />
       <div class="thumbnail-container">
         <img :src="product.image" class="thumbnail" />
         <img :src="product.image" class="thumbnail" />
@@ -21,10 +17,9 @@
 
       <p class="product-price">
         Rp {{ product.price.toLocaleString('id-ID') }}
-        <span
-          v-if="product.oldPrice"
-          class="old-price"
-        >Rp {{ product.oldPrice.toLocaleString('id-ID') }}</span>
+        <span v-if="product.oldPrice" class="old-price">
+          Rp {{ product.oldPrice.toLocaleString('id-ID') }}
+        </span>
       </p>
 
       <p v-if="product.discount" class="product-discount">
@@ -34,10 +29,7 @@
       <div class="product-rating">
         Rating:
         <span v-for="n in 5" :key="n">
-          <i
-            class="fas"
-            :class="n <= product.rating ? 'fa-star' : 'fa-star text-gray-300'"
-          ></i>
+          <i class="fas" :class="n <= product.rating ? 'fa-star' : 'fa-star text-gray-300'"></i>
         </span>
         <span class="rating-value">({{ product.rating }}/5)</span>
       </div>
@@ -68,14 +60,43 @@
     </div>
   </div>
 
-  <div v-else class="not-found">
-    Produk tidak ditemukan.
+  <!-- ⬇️ Section Ulasan Pengguna -->
+  <div v-if="product" class="review-section container mt-5" style="width: 100%;">
+    <hr class="my-4" />
+    <h3 class="fw-bold mb-2">Ulasan Pengguna</h3>
+
+    <!-- Form Review -->
+    <div class="mb-4">
+      <input v-model="newReview.name" class="input mb-2" placeholder="Nama Anda" />
+      <select v-model="newReview.rating" class="input mb-2">
+        <option v-for="n in 5" :key="n" :value="n">{{ n }} Bintang</option>
+      </select>
+      <textarea v-model="newReview.comment" class="input mb-2" rows="3" placeholder="Komentar..."></textarea>
+      <button @click="submitReview" class="btn btn-primary">Kirim Review</button>
+    </div>
+
+    <!-- List Review -->
+    <div v-if="reviews.length > 0">
+      <div v-for="(rev, index) in reviews" :key="index" class="p-3 mb-3 border rounded bg-light">
+        <div class="d-flex justify-content-between mb-1">
+          <strong>{{ rev.name }}</strong>
+          <small>{{ rev.date }}</small>
+        </div>
+        <div class="text-warning mb-1">
+          <i class="fas fa-star" v-for="n in rev.rating" :key="n"></i>
+        </div>
+        <p class="mb-0">{{ rev.comment }}</p>
+      </div>
+    </div>
+    <div v-else class="text-muted">Belum ada ulasan untuk produk ini.</div>
   </div>
+
+  <div v-else class="not-found">Produk tidak ditemukan.</div>
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useProductStore } from '@/Stores/Product'
 import { useCartStore } from '@/Stores/cartStore'
 
@@ -90,7 +111,6 @@ const quantity = ref(1)
 onMounted(async () => {
   const id = parseInt(route.params.id)
 
-  // Jika produk belum di-load, fetch dari API dulu
   if (!productStore.products.length) {
     await productStore.fetchProducts()
   }
@@ -115,7 +135,53 @@ function addToCart() {
     }
   }
 }
+
+// 📝 Review
+const reviews = ref([])
+const newReview = ref({
+  name: '',
+  rating: 5,
+  comment: ''
+})
+
+function loadReviews() {
+  const allReviews = JSON.parse(localStorage.getItem('reviews') || '[]')
+  reviews.value = allReviews.filter(r => r.productId === product.value?.id)
+}
+
+function submitReview() {
+  if (!newReview.value.name || !newReview.value.comment) {
+    alert("Nama dan komentar wajib diisi!")
+    return
+  }
+
+  const reviewData = {
+    ...newReview.value,
+    productId: product.value.id,
+    date: new Date().toISOString().split('T')[0]
+  }
+
+  const allReviews = JSON.parse(localStorage.getItem('reviews') || '[]')
+  allReviews.push(reviewData)
+  localStorage.setItem('reviews', JSON.stringify(allReviews))
+
+  newReview.value = { name: '', rating: 5, comment: '' }
+  loadReviews()
+  alert("Terima kasih atas ulasannya!")
+}
+
+watch(product, (val) => {
+  if (val) loadReviews()
+})
 </script>
+
+<style scoped>
+/* ... semua style kamu tetap digunakan tanpa diubah ... */
+
+textarea.input {
+  resize: vertical;
+}
+</style>
 
 
 <style scoped>

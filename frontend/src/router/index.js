@@ -46,7 +46,8 @@ const routes = [
   path: '/admin/add',
   component: () => import('@/pages/AddProduct.vue'),
   meta: { requiresAdmin: true }
-}  {
+},
+{
     path: '/product/:id',
     name: 'ProductDetail',
     component: () => import('@/pages/ProductDetail.vue')

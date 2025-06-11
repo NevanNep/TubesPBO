@@ -51,8 +51,10 @@ export default {
   setup() {
     const productStore = useProductStore()
 
+    // Ambil best seller dari getter store
     const bestSellers = computed(() => productStore.getBestSellers)
 
+    // Fungsi scroll untuk carousel Best Seller
     const scrollLeft = () => {
       document.querySelector('.best-seller-grid').scrollBy({ left: -300, behavior: 'smooth' })
     }
@@ -65,11 +67,9 @@ export default {
       window.location.href = '/products'
     }
 
-    // ⏳ Fetch produk dari API saat komponen dimount
+    // Fetch data produk dari API saat komponen dimount
     onMounted(async () => {
-      if (productStore.products.length === 0) {
-        await productStore.fetchProducts()
-      }
+      await productStore.fetchProducts() // Ambil data selalu dari database
     })
 
     return {
@@ -83,7 +83,6 @@ export default {
 </script>
 
 <style scoped>
-/* ... semua CSS tetap seperti yang kamu tulis sebelumnya ... */
 .menu-page {
   font-family: 'Poppins', sans-serif;
   padding-bottom: 4rem;

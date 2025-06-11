@@ -1,7 +1,7 @@
 // src/api/productApi.js
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8080/'
+const API_URL = 'http://localhost:8080/api/';
 
 // Ambil semua produk
 export const fetchAllProducts = async () => {

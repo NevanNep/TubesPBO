@@ -54,6 +54,7 @@
         Register
       </button>
     </form>
+
     <p class="text-center mt-3">
       Sudah punya akun?
       <router-link to="/login" class="text-danger w-100 fw-semibold">
@@ -74,27 +75,41 @@ export default {
     };
   },
   methods: {
-    register() {
+    async register() {
       if (this.password !== this.confirmPassword) {
         alert('Password dan konfirmasi password tidak cocok.');
         return;
       }
 
-      const user = {
+      const payload = {
         email: this.email,
         username: this.username,
-        password: this.password,
-        role: 'user' // default otomatis 'user'
+        password: this.password
       };
 
-      localStorage.setItem('user', JSON.stringify(user));
-      alert('Pendaftaran berhasil! Silakan login.');
-      this.$router.push('/login');
+      try {
+        const response = await fetch('/api/buyer/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Registrasi gagal');
+        }
+
+        alert('Pendaftaran berhasil! Silakan login.');
+        this.$router.push('/login');
+      } catch (error) {
+        alert(`Error: ${error.message}`);
+      }
     }
   }
 };
 </script>
-
 <style scoped>
 .shadow {
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);

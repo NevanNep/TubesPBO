@@ -17,10 +17,14 @@ public class AuthenticationService {
     }
 
     public String login(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (user.getPassword().equals(password)) {
-            return jwtUtil.generateToken(user.getEmail(), user.getId().toString());
+            // ✅ Kirim role-nya ke token, bukan ID
+            return jwtUtil.generateToken(user.getEmail(), user.getRole());
         }
+
         throw new RuntimeException("Invalid credentials");
     }
 }

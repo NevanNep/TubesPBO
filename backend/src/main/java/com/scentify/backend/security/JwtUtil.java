@@ -40,15 +40,24 @@ public class JwtUtil {
     }
 
     // Generate token dengan username dan role di dalam claims
-    public String generateToken(String username, String role) {
+    // Generate token dengan username dan role di dalam claims
+    public String generateToken(String username, String rawRole) {
+        // Ubah role ke uppercase untuk konsistensi, dan validasi agar tidak kosong
+        String role = (rawRole != null) ? rawRole.toUpperCase() : "BUYER";
+
+        if (!role.equals("ADMIN") && !role.equals("BUYER")) {
+            role = "BUYER"; // fallback default
+        }
+
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", role)  // simpan role di claim
+                .claim("role", role)  // simpan role string yang valid
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 jam
                 .signWith(SECRET_KEY) // pakai SecretKey langsung
                 .compact();
     }
+
 
     // Validasi token berdasarkan username dan expiration
     public Boolean validateToken(String token, String username) {

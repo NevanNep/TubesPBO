@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                // token invalid or expired, bisa log disini
+                // Token invalid atau expired
             }
         }
 
@@ -53,9 +53,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             // Ambil role dari token
             String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
 
-            // Validasi token dan username
+            // Pembatasan akses admin
+            String uri = request.getRequestURI();
+            if (uri.startsWith("/api/admin") && !"ADMIN".equals(role)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+                return;
+            }
+
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-                // Buat granted authority dari role
                 var authorities = List.of(new SimpleGrantedAuthority(role));
 
                 UsernamePasswordAuthenticationToken authToken =

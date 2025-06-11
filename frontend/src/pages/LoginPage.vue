@@ -18,7 +18,6 @@
         />
       </div>
 
-
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold">Password</label>
         <input
@@ -31,15 +30,6 @@
           autocomplete="current-password"
         />
       </div>
-
-      <div class="mb-3">
-        <label for="role">Login sebagai:</label>
-        <select v-model="form.role" class="form-control" required>
-           <option value="user">User</option>
-           <option value="admin">Admin</option>
-        </select>
-      </div>
-
 
       <button type="submit" class="btn btn-danger w-100 fw-semibold">
         Login
@@ -60,10 +50,7 @@ export default {
   data() {
     return {
       email: '',
-      password: '',
-      form: {
-        role: 'user' // default ke user
-      }
+      password: ''
     };
   },
   mounted() {
@@ -75,22 +62,21 @@ export default {
     login() {
       const storedUser = JSON.parse(localStorage.getItem('user'));
 
-      if (!this.email || !this.password || !this.form.role) {
-        alert('Mohon isi semua field.');
+      if (!this.email || !this.password) {
+        alert('Mohon isi email dan password.');
         return;
       }
 
       if (
         storedUser &&
         storedUser.email === this.email &&
-        storedUser.password === this.password &&
-        storedUser.role === this.form.role // cocokkan role juga
+        storedUser.password === this.password
       ) {
         alert('Login berhasil!');
 
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
-        localStorage.setItem('userRole', storedUser.role);
+        localStorage.setItem('userRole', storedUser.role); // role tetap disimpan
 
         // Arahkan berdasarkan role
         if (storedUser.role === 'admin') {
@@ -99,13 +85,12 @@ export default {
           this.$router.push('/');
         }
       } else {
-        alert('Email, password, atau role salah.');
+        alert('Email atau password salah.');
       }
     }
   }
 };
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');

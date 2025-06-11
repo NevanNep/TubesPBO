@@ -18,14 +18,6 @@
         />
       </div>
 
-      <div class="mb-3">
-        <label for="role">Login sebagai:</label>
-        <select v-model="form.role" class="form-control" required>
-           <option value="user">User</option>
-           <option value="admin">Admin</option>
-        </select>
-      </div>
-
 
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold">Password</label>
@@ -39,6 +31,15 @@
           autocomplete="current-password"
         />
       </div>
+
+      <div class="mb-3">
+        <label for="role">Login sebagai:</label>
+        <select v-model="form.role" class="form-control" required>
+           <option value="user">User</option>
+           <option value="admin">Admin</option>
+        </select>
+      </div>
+
 
       <button type="submit" class="btn btn-danger w-100 fw-semibold">
         Login
@@ -111,7 +112,7 @@ export default {
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Poppins;
+  font-family: Poppins;
   background-color: #f8f9fa;
 }
 

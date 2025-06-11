@@ -87,8 +87,14 @@ const cartStore = useCartStore()
 const product = ref(null)
 const quantity = ref(1)
 
-onMounted(() => {
+onMounted(async () => {
   const id = parseInt(route.params.id)
+
+  // Jika produk belum di-load, fetch dari API dulu
+  if (!productStore.products.length) {
+    await productStore.fetchProducts()
+  }
+
   product.value = productStore.getProductById(id)
 })
 
@@ -110,6 +116,7 @@ function addToCart() {
   }
 }
 </script>
+
 
 <style scoped>
 .product-detail-container {

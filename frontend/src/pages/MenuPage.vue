@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useProductStore } from '@/Stores/Product'
 
 import HeroBanner from '../components/HeroBanner.vue'
@@ -65,6 +65,13 @@ export default {
       window.location.href = '/products'
     }
 
+    // ⏳ Fetch produk dari API saat komponen dimount
+    onMounted(async () => {
+      if (productStore.products.length === 0) {
+        await productStore.fetchProducts()
+      }
+    })
+
     return {
       bestSellers,
       scrollLeft,
@@ -76,20 +83,19 @@ export default {
 </script>
 
 <style scoped>
+/* ... semua CSS tetap seperti yang kamu tulis sebelumnya ... */
 .menu-page {
   font-family: 'Poppins', sans-serif;
   padding-bottom: 4rem;
   color: #2E1A1A;
 }
 
-/* Section Titles */
 .section-title {
   font-size: 2rem;
   font-weight: bold;
   margin: 0;
 }
 
-/* Best Seller Header */
 .best-seller-header {
   display: flex;
   justify-content: space-between;
@@ -97,7 +103,6 @@ export default {
   margin: 2rem 2rem 1rem;
 }
 
-/* Slider Buttons */
 .slider-buttons {
   display: flex;
   gap: 1rem;
@@ -116,7 +121,6 @@ export default {
   color: #fff;
 }
 
-/* Scroll Container */
 .best-seller-wrapper {
   overflow-x: auto;
   padding: 0 2rem;
@@ -128,12 +132,10 @@ export default {
   min-width: max-content;
 }
 
-/* Product Card diatur proporsional */
 .best-seller-grid ::v-deep(.product-card) {
   flex: 0 0 240px;
 }
 
-/* Lihat Produk Button */
 .lihat-produk-btn {
   margin: 1rem auto 0;
   display: block;
@@ -151,7 +153,6 @@ export default {
   color: #fff;
 }
 
-/* Shop by Categories */
 .shop-by-categories {
   margin-top: 4rem;
   padding: 0 1rem;

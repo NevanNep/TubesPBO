@@ -1,6 +1,6 @@
 <template>
   <div class="container my-5" style="max-width: 420px;">
-    <h2 class="text-center mb-4 fw-bold" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: black;">
+    <h2 class="text-center mb-4 fw-bold" style="font-family: Poppins; font-size: 2.5rem; color: black;">
     Daftar Akun Baru
 </h2>
     <form @submit.prevent="register" class="shadow p-4 rounded bg-light">
@@ -37,13 +37,6 @@
           placeholder="Masukkan password"
         />
       </div>
-      <div class="mb-3">
-       <label for="role">Login sebagai:</label>
-        <select v-model="form.role" class="form-control" required>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
 
       <div class="mb-4">
         <label for="confirmPassword" class="form-label">Konfirmasi Password:</label>
@@ -56,8 +49,17 @@
           placeholder="Konfirmasi password"
         />
       </div>
+
+      <div class="mb-3">
+       <label for="role">Login sebagai:</label>
+        <select v-model="form.role" class="form-control" required>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
       <button type="submit" class="btn btn-danger w-100 fw-semibold">
-        Login
+        Register
       </button>
     </form>
     <p class="text-center mt-3">

@@ -11,9 +11,7 @@
       <!-- Menu Tengah -->
       <nav class="navbar-center">
         <router-link to="/">SHOP BY CATEGORIES</router-link>
-        <router-link to="#">SHOP BY BRANDS</router-link>
-        <router-link to="#">TOP PICKS</router-link>
-        <router-link to="#">SALE</router-link>
+        <router-link to="#">BEST SELLER</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
 
@@ -158,7 +156,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 500px;
+  min-width: 710px;
   justify-content: flex-end;
 }
 

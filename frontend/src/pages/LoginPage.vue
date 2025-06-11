@@ -60,47 +60,53 @@ export default {
   },
   methods: {
     async login() {
-      if (!this.email || !this.password) {
-        alert('Mohon isi email dan password.');
-        return;
-      }
+  if (!this.email || !this.password) {
+    alert('Mohon isi email dan password.');
+    return;
+  }
 
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password
-          })
-        });
+  const payload = {
+    email: this.email,
+    password: this.password
+  };
 
-        const result = await response.json();
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-        if (!response.ok) {
-          throw new Error(result.message || 'Login gagal.');
-        }
-
-        // Simpan token dan data user ke localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('loggedInUser', JSON.stringify(result.user));
-        localStorage.setItem('userRole', result.user.role); // jika role tersedia
-
-        alert('Login berhasil!');
-
-        // Arahkan user sesuai role
-        if (result.user.role === 'admin') {
-          this.$router.push('/admin');
-        } else {
-          this.$router.push('/');
-        }
-      } catch (error) {
-        alert(`Error: ${error.message}`);
-      }
+    const token = await response.text(); // karena backend kirim token string
+    if (!response.ok) {
+      throw new Error("Login gagal.");
     }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', token);
+
+    // Decode role dari token (payload base64)
+    const decodedPayload = JSON.parse(atob(token.split('.')[1]));
+    const role = decodedPayload.role || 'BUYER';
+
+    localStorage.setItem('userRole', role);
+
+    alert('Login berhasil!');
+
+    // Redirect berdasarkan role
+    if (role === 'ADMIN') {
+      this.$router.push('/admin');
+    } else {
+      this.$router.push('/');
+    }
+
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  }
+}
+
   }
 };
 </script>

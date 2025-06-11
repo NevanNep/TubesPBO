@@ -59,33 +59,46 @@ export default {
     }
   },
   methods: {
-    login() {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-
+    async login() {
       if (!this.email || !this.password) {
         alert('Mohon isi email dan password.');
         return;
       }
 
-      if (
-        storedUser &&
-        storedUser.email === this.email &&
-        storedUser.password === this.password
-      ) {
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: this.email,
+            password: this.password
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Login gagal.');
+        }
+
+        // Simpan token dan data user ke localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('loggedInUser', JSON.stringify(result.user));
+        localStorage.setItem('userRole', result.user.role); // jika role tersedia
+
         alert('Login berhasil!');
 
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
-        localStorage.setItem('userRole', storedUser.role); // role tetap disimpan
-
-        // Arahkan berdasarkan role
-        if (storedUser.role === 'admin') {
+        // Arahkan user sesuai role
+        if (result.user.role === 'admin') {
           this.$router.push('/admin');
         } else {
           this.$router.push('/');
         }
-      } else {
-        alert('Email atau password salah.');
+      } catch (error) {
+        alert(`Error: ${error.message}`);
       }
     }
   }

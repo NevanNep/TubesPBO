@@ -18,7 +18,6 @@
         />
       </div>
 
-
       <div class="mb-4">
         <label for="password" class="form-label fw-semibold">Password</label>
         <input
@@ -31,15 +30,6 @@
           autocomplete="current-password"
         />
       </div>
-
-      <div class="mb-3">
-        <label for="role">Login sebagai:</label>
-        <select v-model="form.role" class="form-control" required>
-           <option value="user">User</option>
-           <option value="admin">Admin</option>
-        </select>
-      </div>
-
 
       <button type="submit" class="btn btn-danger w-100 fw-semibold">
         Login
@@ -60,10 +50,7 @@ export default {
   data() {
     return {
       email: '',
-      password: '',
-      form: {
-        role: 'user' // default ke user
-      }
+      password: ''
     };
   },
   mounted() {
@@ -72,40 +59,57 @@ export default {
     }
   },
   methods: {
-    login() {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
+    async login() {
+  if (!this.email || !this.password) {
+    alert('Mohon isi email dan password.');
+    return;
+  }
 
-      if (!this.email || !this.password || !this.form.role) {
-        alert('Mohon isi semua field.');
-        return;
-      }
+  const payload = {
+    email: this.email,
+    password: this.password
+  };
 
-      if (
-        storedUser &&
-        storedUser.email === this.email &&
-        storedUser.password === this.password &&
-        storedUser.role === this.form.role // cocokkan role juga
-      ) {
-        alert('Login berhasil!');
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
-        localStorage.setItem('userRole', storedUser.role);
-
-        // Arahkan berdasarkan role
-        if (storedUser.role === 'admin') {
-          this.$router.push('/admin');
-        } else {
-          this.$router.push('/');
-        }
-      } else {
-        alert('Email, password, atau role salah.');
-      }
+    const token = await response.text(); // karena backend kirim token string
+    if (!response.ok) {
+      throw new Error("Login gagal.");
     }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', token);
+
+    // Decode role dari token (payload base64)
+    const decodedPayload = JSON.parse(atob(token.split('.')[1]));
+    const role = decodedPayload.role || 'BUYER';
+
+    localStorage.setItem('userRole', role);
+
+    alert('Login berhasil!');
+
+    // Redirect berdasarkan role
+    if (role === 'ADMIN') {
+      this.$router.push('/admin');
+    } else {
+      this.$router.push('/');
+    }
+
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  }
+}
+
   }
 };
 </script>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');

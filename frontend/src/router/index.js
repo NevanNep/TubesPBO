@@ -45,9 +45,10 @@ const routes = [
   meta: { requiresAdmin: true }
 },
 {
-  path: '/admin/detail/:id',
-  component: () => import('@/pages/AdminDetail.vue'),
-  meta: { requiresAdmin: true }
+  path: '/admin-detail/:id',
+  name: 'AdminDetail',
+  component: () => import('../pages/AdminDetail.vue'),
+  meta: { requiresAuth: true, requiresAdmin: true }
 },
 {
   path: '/admin/add',

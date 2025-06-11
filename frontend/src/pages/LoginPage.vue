@@ -59,35 +59,54 @@ export default {
     }
   },
   methods: {
-    login() {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
+    async login() {
+  if (!this.email || !this.password) {
+    alert('Mohon isi email dan password.');
+    return;
+  }
 
-      if (!this.email || !this.password) {
-        alert('Mohon isi email dan password.');
-        return;
-      }
+  const payload = {
+    email: this.email,
+    password: this.password
+  };
 
-      if (
-        storedUser &&
-        storedUser.email === this.email &&
-        storedUser.password === this.password
-      ) {
-        alert('Login berhasil!');
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('loggedInUser', JSON.stringify(storedUser));
-        localStorage.setItem('userRole', storedUser.role); // role tetap disimpan
-
-        // Arahkan berdasarkan role
-        if (storedUser.role === 'admin') {
-          this.$router.push('/admin');
-        } else {
-          this.$router.push('/');
-        }
-      } else {
-        alert('Email atau password salah.');
-      }
+    const token = await response.text(); // karena backend kirim token string
+    if (!response.ok) {
+      throw new Error("Login gagal.");
     }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', token);
+
+    // Decode role dari token (payload base64)
+    const decodedPayload = JSON.parse(atob(token.split('.')[1]));
+    const role = decodedPayload.role || 'BUYER';
+
+    localStorage.setItem('userRole', role);
+
+    alert('Login berhasil!');
+
+    // Redirect berdasarkan role
+    if (role === 'ADMIN') {
+      this.$router.push('/admin');
+    } else {
+      this.$router.push('/');
+    }
+
+  } catch (error) {
+    alert(`Error: ${error.message}`);
+  }
+}
+
   }
 };
 </script>

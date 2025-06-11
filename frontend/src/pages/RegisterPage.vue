@@ -88,7 +88,7 @@ export default {
       };
 
       try {
-        const response = await fetch('/api/buyer/register', {
+        const response = await fetch('http://localhost:8080/api/buyer/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

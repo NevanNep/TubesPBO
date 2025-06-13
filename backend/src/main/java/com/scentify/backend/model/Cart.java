@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Cart {
+
     private Map<Product, Integer> items;
 
     public Cart() {
@@ -19,19 +20,13 @@ public class Cart {
     }
 
     public void addItem(Product product, int quantity) {
-        if (items.containsKey(product)) {
-            items.put(product, items.get(product) + quantity);
-        } else {
-            items.put(product, quantity);
-        }
+        items.merge(product, quantity, Integer::sum);
     }
 
     public double calculateTotal() {
-        double total = 0.0;
-        for (Map.Entry<Product, Integer> entry : items.entrySet()) {
-            total += entry.getKey().getPrice() * entry.getValue();
-        }
-        return total;
+        return items.entrySet().stream()
+                .mapToDouble(entry -> entry.getKey().getPrice() * entry.getValue())
+                .sum();
     }
 
     public void showCart() {
@@ -39,8 +34,17 @@ public class Cart {
         for (Map.Entry<Product, Integer> entry : items.entrySet()) {
             Product product = entry.getKey();
             int qty = entry.getValue();
-            System.out.println("- " + product.getNama() + " x" + qty + " = Rp" + (product.getPrice() * qty));
+            System.out.println("- " + product.getName() + " x" + qty + " = Rp" + (product.getPrice() * qty));
         }
         System.out.println("Total: Rp" + calculateTotal());
+    }
+
+    // Optional: Tambahkan fungsi pengelolaan
+    public void removeItem(Product product) {
+        items.remove(product);
+    }
+
+    public void clear() {
+        items.clear();
     }
 }

@@ -43,11 +43,11 @@ public class OrderService {
         double totalAmount = 0;
 
         for (Product product : products) {
-            long qty = productCount.getOrDefault(product.getProductId(), 0L);
+            long qty = productCount.getOrDefault(product.getId(), 0L);
 
             // Cek stok produk cukup
             if (product.getStock() < qty) { 
-                throw new RuntimeException("Stok produk " + product.getProductId() + " tidak cukup");
+                throw new RuntimeException("Stok produk " + product.getId() + " tidak cukup");
             }
 
             // Buat OrderItem baru
@@ -101,11 +101,8 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByBuyerId(Long buyerId) {
-    Buyer buyer = buyerRepo.findById(buyerId)
-            .orElseThrow(() -> new RuntimeException("Buyer not found"));
-    return orderRepo.findByBuyer(buyer);
-}
-    
-
-    // Tambah method lain jika diperlukan, misal list orders by buyer
+        Buyer buyer = buyerRepo.findById(buyerId)
+                .orElseThrow(() -> new RuntimeException("Buyer not found"));
+        return orderRepo.findByBuyer(buyer);
+    }
 }

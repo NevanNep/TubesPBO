@@ -30,12 +30,9 @@ public class ProductService {
     public Product updateProduct(String id, Product updatedProduct) {
         return productRepository.findById(id)
                 .map(product -> {
-                    product.setName(updatedProduct.getName());
+                    product.setNama(updatedProduct.getNama());
                     product.setBrand(updatedProduct.getBrand());
-                    product.setImage(updatedProduct.getImage());
                     product.setPrice(updatedProduct.getPrice());
-                    product.setDiscount(updatedProduct.getDiscount());
-                    product.setRating(updatedProduct.getRating());
                     product.setStock(updatedProduct.getStock());
                     product.setCategory(updatedProduct.getCategory());
                     return productRepository.save(product);

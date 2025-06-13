@@ -9,40 +9,41 @@ import jakarta.persistence.Table;
 public class Product {
 
     @Id
-    private String id;
+    private String productId;
 
+    private String nama;
     private String brand;
-    private String name;
-    private String image;
     private double price;
-    private int discount;
-    private double rating;
-    private String category;
     private int stock;
+    private String category;
 
     public Product() {
     }
 
-    public Product(String id, String brand, String name, String image, double price, int discount, double rating, String category, int stock) {
-        this.id = id;
+    public Product(String productId, String nama, String brand, double price, int stock, String category) {
+        this.productId = productId;
+        this.nama = nama;
         this.brand = brand;
-        this.name = name;
-        this.image = image;
         this.price = price;
-        this.discount = discount;
-        this.rating = rating;
-        this.category = category;
         this.stock = stock;
+        this.category = category;
     }
 
-    // Getters & Setters
-
-    public String getId() {
-        return id;
+    // Getter dan Setter
+    public String getProductId() {
+        return productId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public void setNama(String nama) {
+        this.nama = nama;
     }
 
     public String getBrand() {
@@ -53,22 +54,6 @@ public class Product {
         this.brand = brand;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public double getPrice() {
         return price;
     }
@@ -77,20 +62,12 @@ public class Product {
         this.price = price;
     }
 
-    public int getDiscount() {
-        return discount;
+    public int getStock() {
+        return stock;
     }
 
-    public void setDiscount(int discount) {
-        this.discount = discount;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 
     public String getCategory() {
@@ -99,13 +76,5 @@ public class Product {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
     }
 }

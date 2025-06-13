@@ -9,6 +9,7 @@ import RegisterPage from '../pages/RegisterPage.vue';
 import ReviewPage from '@/pages/ReviewPage.vue';
 import ProfilePage from '@/pages/ProfilePage.vue';
 import CategoryPage from '@/pages/CategoryPage.vue';
+import ProductPage from '@/pages/productPage.vue'
 
 // Halaman Admin
 import AdminView from '@/pages/AdminView.vue';
@@ -55,6 +56,16 @@ const routes = [
     name: 'AddProduct',
     component: AddProduct,
     meta: { requiresAdmin: true }
+  },
+  {
+    path: '/products',
+    name: 'Products',
+    component: ProductPage
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: ProductDetail,
   }
 ];
 

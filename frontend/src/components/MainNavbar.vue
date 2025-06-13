@@ -14,6 +14,7 @@
         <router-link to="#">BEST SELLER</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
+        <router-link to="/products">PRODUCT</router-link>
         <router-link
           v-if="isLoggedIn && userRole === 'admin'"
           to="/admin"

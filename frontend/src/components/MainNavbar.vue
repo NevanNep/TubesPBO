@@ -160,7 +160,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 710px;
+  min-width: 650px;
   justify-content: flex-end;
 }
 

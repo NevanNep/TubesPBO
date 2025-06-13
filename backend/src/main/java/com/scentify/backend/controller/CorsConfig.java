@@ -12,7 +12,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@org.springframework.lang.NonNull org.springframework.web.servlet.config.annotation.CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:5173") // Vue
+                    .allowedOrigins("http://localhost:8080") // Vue
                     .allowedMethods("*")
                     .allowedHeaders("*");
             }

@@ -27,49 +27,59 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private CustomUserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(
-            @org.springframework.lang.NonNull HttpServletRequest request,
-            @org.springframework.lang.NonNull HttpServletResponse response,
-            @org.springframework.lang.NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+protected void doFilterInternal(
+        @org.springframework.lang.NonNull HttpServletRequest request,
+        @org.springframework.lang.NonNull HttpServletResponse response,
+        @org.springframework.lang.NonNull FilterChain filterChain
+) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+    String uri = request.getRequestURI();
 
-        String username = null;
-        String jwt = null;
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            try {
-                username = jwtUtil.extractUsername(jwt);
-            } catch (Exception e) {
-                // Token invalid atau expired
-            }
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userDetailsService.loadUserByUsername(username);
-
-            // Ambil role dari token
-            String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
-
-            // Pembatasan akses admin
-            String uri = request.getRequestURI();
-            if (uri.startsWith("/api/admin") && !"ADMIN".equals(role)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-                return;
-            }
-
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-                var authorities = List.of(new SimpleGrantedAuthority(role));
-
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
-
+    // ✅ Bypass endpoint publik tanpa validasi JWT
+    if (uri.startsWith("/api/auth/")
+            || uri.equals("/api/admin/register")
+            || uri.equals("/api/buyer/register")
+            || uri.startsWith("/api/products")) {
         filterChain.doFilter(request, response);
+        return;
+    }
+
+    final String authHeader = request.getHeader("Authorization");
+
+    String username = null;
+    String jwt = null;
+
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        jwt = authHeader.substring(7);
+        try {
+            username = jwtUtil.extractUsername(jwt);
+        } catch (Exception e) {
+            // Token invalid atau expired
+        }
+    }
+
+    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        var userDetails = userDetailsService.loadUserByUsername(username);
+
+        // Ambil role dari token
+        String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
+
+        // ⛔ Pembatasan akses admin
+        if (uri.startsWith("/api/admin") && !"ADMIN".equals(role)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            return;
+        }
+
+        if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+            var authorities = List.of(new SimpleGrantedAuthority(role));
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+    }
+
+    filterChain.doFilter(request, response);
     }
 }

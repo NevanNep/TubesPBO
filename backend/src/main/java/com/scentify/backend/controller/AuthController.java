@@ -30,4 +30,24 @@ public class AuthController {
         public String email;
         public String password;
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        try {
+            authenticationService.register(registerRequest);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+// DTO untuk data register
+        public static class RegisterRequest {
+            public String nama;
+            public String email;
+            public String password;
+            public String alamat;
+            public String role;
+        }
+
 }

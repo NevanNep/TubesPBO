@@ -11,9 +11,10 @@ import ProfilePage from '@/pages/ProfilePage.vue';
 import CategoryPage from '@/pages/CategoryPage.vue';
 
 // Halaman Admin
-import AdminView from '@/pages/AdminView.vue';        // List & tambah produk
-import AdminDetail from '@/pages/AdminDetail.vue';    // Edit produk
-import AddProduct from '@/pages/AddProduct.vue';      // Tambah produk (kalau terpisah)
+import AdminView from '@/pages/AdminView.vue';
+import AdminDetail from '@/pages/AdminDetail.vue';
+import AddProduct from '@/pages/AddProduct.vue';
+import ProductDetail from '@/pages/ProductDetail.vue';
 
 const routes = [
   // Halaman Umum
@@ -30,31 +31,13 @@ const routes = [
     component: CategoryPage,
     props: true
   },
-
- {
-  path: '/admin',
-  component: () => import('@/pages/AdminView.vue'),
-  meta: { requiresAdmin: true }
-},
-{
-  path: '/admin-detail/:id',
-  name: 'AdminDetail',
-  component: () => import('../pages/AdminDetail.vue'),
-  meta: { requiresAuth: true, requiresAdmin: true }
-},
-{
-  path: '/admin/add',
-  component: () => import('@/pages/AddProduct.vue'),
-  meta: { requiresAdmin: true }
-},
-{
+  {
     path: '/product/:id',
     name: 'ProductDetail',
-    component: () => import('@/pages/ProductDetail.vue')
+    component: ProductDetail
   },
 
-
-  // Halaman Admin (dengan meta: requiresAdmin)
+  // Halaman Admin
   {
     path: '/admin',
     name: 'AdminView',
@@ -77,23 +60,23 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
-// 🔐 Middleware Route Guard
+// Middleware: Cek akses admin
 router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  const userRole = localStorage.getItem('userRole'); // Ambil role yang sedang login
+  const role = localStorage.getItem('userRole');
 
   if (to.meta.requiresAdmin) {
-    if (isLoggedIn && userRole === 'admin') {
-      next(); // boleh lanjut ke /admin
+    if (isLoggedIn && role?.toUpperCase() === 'ADMIN') {
+      next();
     } else {
       alert('Akses hanya untuk admin!');
       next('/login');
     }
   } else {
-    next(); // semua route lain bebas diakses
+    next();
   }
 });
 

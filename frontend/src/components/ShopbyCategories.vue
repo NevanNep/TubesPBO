@@ -1,5 +1,5 @@
 <template>
-  <section class="shop-by-categories">
+  <section id="shop-by-categories" class="shop-by-categories">
     <div class="category-cards">
       <router-link to="/category/men" class="category-card">
         <img src="@/assets/men2.jpg" alt="Men Category" />

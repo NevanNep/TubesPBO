@@ -11,8 +11,8 @@
 
       <!-- Menu Tengah -->
       <nav class="navbar-center">
-        <router-link to="#">SHOP BY CATEGORIES</router-link>
-        <router-link to="#">BEST SELLER</router-link>
+        <a href="#shop-by-categories">SHOP BY CATEGORIES</a>
+        <a href="#best-seller">BEST SELLER</a>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
         <router-link

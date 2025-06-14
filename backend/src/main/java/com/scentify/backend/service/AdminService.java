@@ -24,13 +24,15 @@ public class AdminService {
         return adminRepo.save(admin);
     }
 
+    // Tambah produk
     public Product addProduct(Product product) {
         return productRepo.save(product);
     }
 
+    // Update produk
     public Product updateProduct(String productId, Product updatedProduct) {
         return productRepo.findById(productId).map(product -> {
-            product.setNama(updatedProduct.getNama());
+            product.setName(updatedProduct.getName());
             product.setBrand(updatedProduct.getBrand());
             product.setPrice(updatedProduct.getPrice());
             product.setStock(updatedProduct.getStock());
@@ -39,10 +41,12 @@ public class AdminService {
         }).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
+    // Hapus produk
     public void deleteProduct(String productId) {
         productRepo.deleteById(productId);
     }
 
+    // Ambil data admin by ID
     public Optional<Admin> getAdminById(Long id) {
         return adminRepo.findById(id);
     }

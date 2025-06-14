@@ -3,27 +3,45 @@
     <!-- Hero Banner -->
     <HeroBanner />
 
+    <!-- Best Deals Section -->
+    <section class="best-deals">
+      <h2 class="section-title">Best Deals</h2>
+      <div class="best-grid">
+        <ProductCard
+          v-for="item in bestDeals"
+          :key="item.id"
+          :product="item"
+        />
+      </div>
+    </section>
+
     <!-- Best Seller Section -->
     <section class="best-seller">
       <div class="best-seller-header">
         <h2 class="section-title">Best Seller</h2>
         <div class="slider-buttons">
-          <button @click="scrollLeft" aria-label="Scroll Left">&#10094;</button>
-          <button @click="scrollRight" aria-label="Scroll Right">&#10095;</button>
+          <button @click="scrollLeft" aria-label="Scroll Left">
+            &#10094;
+          </button>
+          <button @click="scrollRight" aria-label="Scroll Right">
+            &#10095;
+          </button>
         </div>
       </div>
 
       <div class="best-seller-wrapper">
         <div class="best-seller-grid" ref="bestSellerScroll">
           <ProductCard
-            v-for="item in bestSellers"
+            v-for="item in topSellers"
             :key="item.id"
             :product="item"
           />
         </div>
       </div>
 
-      <button class="lihat-produk-btn" @click="lihatProduk">Lihat Produk</button>
+      <button class="lihat-produk-btn" @click="lihatProduk">
+        Lihat Produk
+      </button>
     </section>
 
     <!-- Shop by Categories -->
@@ -34,126 +52,126 @@
   </div>
 </template>
 
-<script>
-import { onMounted, computed } from 'vue'
-import { useProductStore } from '@/Stores/Product'
-
-import HeroBanner from '../components/HeroBanner.vue'
-import ProductCard from '../components/ProductCard.vue'
+<script setup>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import HeroBanner from '@/components/HeroBanner.vue'
+import ProductCard from '@/components/ProductCard.vue'
 import ShopByCategories from '@/components/ShopbyCategories.vue'
 
-export default {
-  components: {
-    HeroBanner,
-    ProductCard,
-    ShopByCategories
-  },
-  setup() {
-    const productStore = useProductStore()
+const allProducts = ref([])
+const bestDeals = ref([])
+const topSellers = ref([])
 
-    // Ambil best seller dari getter store
-    const bestSellers = computed(() => productStore.getBestSellers)
+onMounted(async () => {
+  try {
+    const { data } = await axios.get('http://localhost:8081/api/products')
+    allProducts.value = data
 
-    // Fungsi scroll untuk carousel Best Seller
-    const scrollLeft = () => {
-      document.querySelector('.best-seller-grid').scrollBy({ left: -300, behavior: 'smooth' })
-    }
+    // Filter diskon besar
+    bestDeals.value = data
+      .filter((p) => p.discount >= 20)
+      .sort((a, b) => b.discount - a.discount)
+      .slice(0, 8)
 
-    const scrollRight = () => {
-      document.querySelector('.best-seller-grid').scrollBy({ left: 300, behavior: 'smooth' })
-    }
-
-    const lihatProduk = () => {
-      window.location.href = '/products'
-    }
-
-    // Fetch data produk dari API saat komponen dimount
-    onMounted(async () => {
-      await productStore.fetchProducts() // Ambil data selalu dari database
-    })
-
-    return {
-      bestSellers,
-      scrollLeft,
-      scrollRight,
-      lihatProduk
-    }
+    // Filter produk terjual terbanyak
+    topSellers.value = data
+      .filter((p) => p.sold) // pastikan ada field sold
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 8)
+  } catch (error) {
+    console.error('Gagal mengambil produk:', error)
   }
+})
+
+const scrollLeft = () => {
+  document.querySelector('.best-seller-grid').scrollBy({
+    left: -300,
+    behavior: 'smooth'
+  })
+}
+
+const scrollRight = () => {
+  document.querySelector('.best-seller-grid').scrollBy({
+    left: 300,
+    behavior: 'smooth'
+  })
+}
+
+const lihatProduk = () => {
+  window.location.href = '/products'
 }
 </script>
 
 <style scoped>
 .menu-page {
   font-family: 'Poppins', sans-serif;
-  padding-bottom: 4rem;
-  color: #2E1A1A;
+  padding: 2rem;
+  background: #fff;
 }
 
 .section-title {
   font-size: 2rem;
-  font-weight: bold;
-  margin: 0;
+  font-weight: 700;
+  color: #45000d;
+  margin-bottom: 1rem;
+}
+
+.best-deals,
+.shop-by-categories {
+  margin: 3rem 0;
+}
+
+.best-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+
+.best-seller {
+  margin: 4rem 0;
 }
 
 .best-seller-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 2rem 2rem 1rem;
 }
 
-.slider-buttons {
-  display: flex;
-  gap: 1rem;
-}
 .slider-buttons button {
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 0.3rem 0.7rem;
+  background: transparent;
+  border: none;
   font-size: 1.5rem;
-  border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.slider-buttons button:hover {
-  background-color: #d33;
-  color: #fff;
+  color: #45000d;
 }
 
 .best-seller-wrapper {
   overflow-x: auto;
-  padding: 0 2rem;
-}
-.best-seller-grid {
-  display: flex;
-  gap: 1.5rem;
-  padding-bottom: 1rem;
-  min-width: max-content;
+  padding: 1rem 0;
 }
 
-.best-seller-grid ::v-deep(.product-card) {
-  flex: 0 0 240px;
+.best-seller-grid {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 .lihat-produk-btn {
-  margin: 1rem auto 0;
   display: block;
-  background: transparent;
-  border: 1px solid #45000D;
-  color: #45000D;
-  padding: 0.5rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.lihat-produk-btn:hover {
-  background-color: #45000D;
+  margin: 2rem auto 0;
+  padding: 0.75rem 2rem;
+  background: #45000d;
   color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-.shop-by-categories {
-  margin-top: 4rem;
-  padding: 0 1rem;
+.lihat-produk-btn:hover {
+  background: #700014;
 }
 </style>

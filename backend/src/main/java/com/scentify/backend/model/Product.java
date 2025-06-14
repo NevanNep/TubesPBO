@@ -11,25 +11,31 @@ public class Product {
     @Id
     private String productId;
 
-    private String nama;
+    private String name;
     private String brand;
     private double price;
     private int stock;
     private String category;
 
-    public Product() {
-    }
+    private int discount;
+    private String image;
+    private int rating;
 
-    public Product(String productId, String nama, String brand, double price, int stock, String category) {
+    public Product() {}
+
+    public Product(String productId, String name, String brand, double price, int stock, String category, int discount, String image, int rating) {
         this.productId = productId;
-        this.nama = nama;
+        this.name = name;
         this.brand = brand;
         this.price = price;
         this.stock = stock;
         this.category = category;
+        this.discount = discount;
+        this.image = image;
+        this.rating = rating;
     }
 
-    // Getter dan Setter
+    // Getters and Setters
     public String getProductId() {
         return productId;
     }
@@ -38,12 +44,12 @@ public class Product {
         this.productId = productId;
     }
 
-    public String getNama() {
-        return nama;
+    public String getName() {
+        return name;
     }
 
-    public void setNama(String nama) {
-        this.nama = nama;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getBrand() {
@@ -77,4 +83,42 @@ public class Product {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    @Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Product product = (Product) o;
+    return productId.equals(product.productId);
+}
+
+@Override
+public int hashCode() {
+    return productId.hashCode();
+}
+
 }

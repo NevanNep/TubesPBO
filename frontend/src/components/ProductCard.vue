@@ -77,9 +77,8 @@
 </template>
 
 <script>
-import { useCartStore } from '@/Stores/cartStore'; // sesuaikan path jika perlu
+import { useCartStore } from '@/Stores/cartStore'; // pastikan path-nya sesuai
 import { mapStores } from 'pinia';
-
 
 export default {
   props: {
@@ -94,6 +93,8 @@ export default {
         price: 0,
         discount: 0,
         rating: 0,
+        stock: 0,
+        category: '',
       }),
     },
   },
@@ -105,29 +106,37 @@ export default {
   computed: {
     ...mapStores(useCartStore),
     discountedPrice() {
+      if (!this.product || typeof this.product.price !== 'number') return 0;
       return this.product.discount > 0
         ? Math.round(this.product.price * (1 - this.product.discount / 100))
         : this.product.price;
     },
   },
   methods: {
-    addToCart() {
-      const item = {
-        id: this.product.id,
-        name: this.product.name,
-        price: this.discountedPrice,
-        image: this.product.image,
-      };
-      this.cartStore.addToCart(item);
+    async addToCart() {
+      if (!this.product) return;
+
+      const success = await this.cartStore.addToCart(this.product, 1);
+
+      if (success) {
+        this.$toast?.success?.(`${this.product.name} berhasil ditambahkan ke keranjang`);
+      } else {
+        this.$toast?.error?.(`Gagal menambahkan produk ke keranjang`);
+      }
     },
     goToDetail() {
-      if (this.product.id !== null) {
-        this.$router.push({ name: 'ProductDetail', params: { id: this.product.id } });
+      if (this.product?.id != null) {
+        this.$router.push({
+          name: 'ProductDetail',
+          params: { id: this.product.id },
+        });
       }
     },
   },
 };
 </script>
+
+
 
 <style scoped>
 .product-card {

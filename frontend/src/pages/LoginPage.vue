@@ -60,64 +60,69 @@ export default {
   },
   methods: {
     async login() {
-      if (!this.email || !this.password) {
-        alert('Mohon isi email dan password.');
-        return;
-      }
-
-      // ✅ Admin hardcoded
-      if (this.email === 'admin@gmail.com' && this.password === 'Adminsatu') {
-        const adminPayload = {
-          email: 'admin@gmail.com',
-          role: 'ADMIN',
-          username: 'Admin'
-        };
-        const fakeToken = `fake.${btoa(JSON.stringify(adminPayload))}.signature`;
-
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('token', fakeToken);
-        localStorage.setItem('userRole', 'ADMIN');
-
-        alert('Login sebagai admin berhasil!');
-        this.$router.push('/admin');
-        return;
-      }
-
-      // ✅ Login dari backend untuk user biasa
-      const payload = {
-        email: this.email,
-        password: this.password
-      };
-
-      try {
-        const response = await fetch('http://localhost:8081/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const token = await response.text();
-        if (!response.ok) {
-          throw new Error('Email atau password salah.');
-        }
-
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('token', token);
-
-        const payloadBase64 = token.split('.')[1];
-        const decoded = JSON.parse(atob(payloadBase64));
-        const role = decoded.role || 'BUYER';
-
-        localStorage.setItem('userRole', role);
-
-        alert('Login berhasil!');
-        this.$router.push(role === 'ADMIN' ? '/admin' : '/');
-      } catch (error) {
-        alert(`Login gagal: ${error.message}`);
-      }
-    }
+  if (!this.email || !this.password) {
+    alert('Mohon isi email dan password.');
+    return;
   }
-};
+
+  // ✅ Admin hardcoded
+  if (this.email === 'admin@gmail.com' && this.password === 'Adminsatu') {
+    const adminPayload = {
+      email: 'admin@gmail.com',
+      role: 'ADMIN',
+      username: 'Admin'
+    };
+    const fakeToken = `fake.${btoa(JSON.stringify(adminPayload))}.signature`;
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', fakeToken);
+    localStorage.setItem('userRole', 'ADMIN');
+
+    alert('Login sebagai admin berhasil!');
+    this.$router.push('/admin');
+    return;
+  }
+
+  // ✅ Login dari backend untuk user biasa
+  const payload = {
+    email: this.email,
+    password: this.password
+  };
+
+  try {
+    const response = await fetch('http://localhost:8081/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const token = await response.text();
+    if (!response.ok) {
+      throw new Error('Email atau password salah.');
+    }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('token', token);
+
+    // ✅ Decode token untuk ambil role & buyerId
+    const payloadBase64 = token.split('.')[1];
+    const decoded = JSON.parse(atob(payloadBase64));
+    const role = decoded.role || 'BUYER';
+
+    // ⬅️ Ambil dan simpan buyerId (nama field sesuaikan dengan token JWT dari backend kamu)
+    const buyerId = decoded.buyerId || decoded.id || decoded.userId;
+
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('buyerId', buyerId); // ⬅️ LANGKAH PENTING
+
+    alert('Login berhasil!');
+    this.$router.push(role === 'ADMIN' ? '/admin' : '/');
+  } catch (error) {
+    alert(`Login gagal: ${error.message}`);
+  }
+}
+
+}};
 </script>
 
 <style scoped>

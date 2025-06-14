@@ -13,6 +13,8 @@ const app = createApp(App);
 
 const pinia = createPinia(); // << Inisialisasi Pinia
 
+
+
 app.use(pinia); // << Gunakan Pinia
 app.use(router);
 app.mount('#app');

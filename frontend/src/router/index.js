@@ -5,11 +5,10 @@ import MenuPage from '../pages/MenuPage.vue';
 import CartPage from '../pages/CartPage.vue';
 import PaymentPage from '../pages/PaymentPage.vue';
 import LoginPage from '../pages/LoginPage.vue';
-import RegisterPage from '../pages/RegisterPage.vue';
-import ReviewPage from '@/pages/ReviewPage.vue';
+import RegisterPage from '@/pages/RegisterPage.vue';
 import ProfilePage from '@/pages/ProfilePage.vue';
 import CategoryPage from '@/pages/CategoryPage.vue';
-import ProductPage from '@/pages/productPage.vue'
+
 
 // Halaman Admin
 import AdminView from '@/pages/AdminView.vue';
@@ -24,7 +23,6 @@ const routes = [
   { path: '/payment', component: PaymentPage },
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
-  { path: '/reviews', component: ReviewPage },
   { path: '/profile', component: ProfilePage },
   {
     path: '/category/:type',
@@ -57,11 +55,7 @@ const routes = [
     component: AddProduct,
     meta: { requiresAdmin: true }
   },
-  {
-    path: '/products',
-    name: 'Products',
-    component: ProductPage
-  },
+  
   {
     path: '/product/:id',
     name: 'ProductDetail',

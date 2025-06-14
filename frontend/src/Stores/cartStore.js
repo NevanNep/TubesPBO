@@ -1,19 +1,27 @@
 // src/stores/cartStore.js
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
-function loadCartItems() {
+function getBuyerId() {
   try {
-    const stored = localStorage.getItem('cartItems')
-    return stored ? JSON.parse(stored) : []
-  } catch (error) {
-    console.error('Gagal parsing cartItems dari localStorage:', error)
-    return []
+    return localStorage.getItem('buyerId')
+  } catch {
+    return null
+  }
+}
+
+function getAuthHeaders() {
+  const token = localStorage.getItem('token')
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   }
 }
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
-    items: loadCartItems()
+    items: []
   }),
 
   getters: {
@@ -22,53 +30,75 @@ export const useCartStore = defineStore('cart', {
   },
 
   actions: {
-    saveToLocalStorage() {
-      localStorage.setItem('cartItems', JSON.stringify(this.items))
-    },
+    async fetchCart() {
+      const buyerId = getBuyerId()
+      if (!buyerId) return
 
-    addToCart(product, quantity = 1) {
-      // Cek login dulu
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-      if (!isLoggedIn) {
-        alert('Silakan login terlebih dahulu sebelum menambah produk ke keranjang.')
-        return false
-      }
-
-      const existing = this.items.find(item => item.id === product.id)
-      if (existing) {
-        existing.quantity += quantity
-      } else {
-        this.items.push({ ...product, quantity })
-      }
-      this.saveToLocalStorage()
-      return true
-    },
-
-    decreaseQuantity(productId) {
-      const index = this.items.findIndex(item => item.id === productId)
-      if (index !== -1) {
-        if (this.items[index].quantity > 1) {
-          this.items[index].quantity--
-        } else {
-          // Pakai splice agar reaktif
-          this.items.splice(index, 1)
-        }
-        this.saveToLocalStorage()
+      try {
+        const response = await axios.get(`/api/buyer/${buyerId}/cart`, getAuthHeaders())
+        this.items = response.data
+      } catch (err) {
+        console.error('Gagal mengambil data cart:', err.response?.data || err.message)
       }
     },
 
-    removeItem(productId) {
-      const index = this.items.findIndex(item => item.id === productId)
-      if (index !== -1) {
-        // Pakai splice agar reaktif
-        this.items.splice(index, 1)
-        this.saveToLocalStorage()
+    async addToCart(product, quantity = 1) {
+      const buyerId = getBuyerId();
+      if (!buyerId) {
+        alert('Silakan login terlebih dahulu.');
+        return false;
+      }
+    
+      try {
+        await axios.post(
+          `/api/cart/${buyerId}/add`,
+          { productId: product.id, quantity },
+          getAuthHeaders()
+        );
+        await this.fetchCart();
+        return true;
+      } catch (err) {
+        console.error('Error addToCart:', err.response?.data || err.message);
+        alert('Gagal menambahkan ke keranjang:\n' + (err.response?.data || err.message));
+        return false;
+      }
+    },
+    
+    
+
+    async updateQuantity(productId, quantity) {
+      const buyerId = getBuyerId()
+      if (!buyerId) return
+
+      try {
+        await axios.put(
+          `/api/buyer/${buyerId}/cart/${productId}`,
+          { quantity },
+          getAuthHeaders()
+        )
+        await this.fetchCart()
+      } catch (err) {
+        console.error('Gagal update quantity:', err.response?.data || err.message)
+      }
+    },
+
+    async removeItem(productId) {
+      const buyerId = getBuyerId()
+      if (!buyerId) return
+
+      try {
+        await axios.delete(
+          `/api/buyer/${buyerId}/cart/${productId}`,
+          getAuthHeaders()
+        )
+        await this.fetchCart()
+      } catch (err) {
+        console.error('Gagal hapus item:', err.response?.data || err.message)
       }
     },
 
     clearCart() {
       this.items = []
-      this.saveToLocalStorage()
     }
   }
 })

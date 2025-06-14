@@ -4,17 +4,17 @@
       <!-- Logo -->
       <div class="navbar-left">
         <router-link to="/">
-          <img src="@/assets/newnew.png" alt="Scentify Logo" class="logo" />
+         <img src="@/assets/newnew.png" alt="Scentify Logo" class="logo" />
         </router-link>
+
       </div>
 
       <!-- Menu Tengah -->
       <nav class="navbar-center">
-        <router-link to="/">SHOP BY CATEGORIES</router-link>
+        <router-link to="#">SHOP BY CATEGORIES</router-link>
         <router-link to="#">BEST SELLER</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
-        <router-link to="/products">PRODUCT</router-link>
         <router-link
           v-if="isLoggedIn && userRole === 'admin'"
           to="/admin"
@@ -160,7 +160,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 650px;
+  min-width: 700px;
   justify-content: flex-end;
 }
 

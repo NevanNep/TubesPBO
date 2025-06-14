@@ -9,12 +9,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8081") // sesuaikan port frontend jika beda
 public class ProductController {
 
     private final ProductService productService;
 
-    // Gunakan constructor injection untuk lebih baik
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
@@ -26,42 +25,31 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    // Ambil produk berdasarkan productId
+    // Ambil satu produk berdasarkan ID
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
         Product product = productService.getProductById(id);
-        if (product != null) {
-            return ResponseEntity.ok(product);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
     }
 
     // Tambah produk baru
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product created = productService.createProduct(product);
-        return ResponseEntity.ok(created);
+        Product createdProduct = productService.createProduct(product);
+        return ResponseEntity.ok(createdProduct);
     }
 
     // Update produk
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product updatedProduct) {
         Product updated = productService.updateProduct(id, updatedProduct);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     // Hapus produk
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
-        boolean deleted = productService.deleteProduct(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        boolean isDeleted = productService.deleteProduct(id);
+        return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

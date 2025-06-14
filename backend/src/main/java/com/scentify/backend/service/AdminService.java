@@ -29,7 +29,7 @@ public class AdminService {
         return productRepo.save(product);
     }
 
-    // Update produk
+    // ✅ Update produk lengkap
     public Product updateProduct(String productId, Product updatedProduct) {
         return productRepo.findById(productId).map(product -> {
             product.setName(updatedProduct.getName());
@@ -37,6 +37,9 @@ public class AdminService {
             product.setPrice(updatedProduct.getPrice());
             product.setStock(updatedProduct.getStock());
             product.setCategory(updatedProduct.getCategory());
+            product.setDiscount(updatedProduct.getDiscount());  // Tambahan
+            product.setImage(updatedProduct.getImage());        // Tambahan
+            product.setRating(updatedProduct.getRating());      // Tambahan
             return productRepo.save(product);
         }).orElseThrow(() -> new RuntimeException("Product not found"));
     }

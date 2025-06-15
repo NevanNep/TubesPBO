@@ -1,167 +1,71 @@
 <template>
   <div class="category-page">
-    <!-- Breadcrumb -->
-    <nav class="breadcrumb">
-      <span>Home</span> › <span>FRAGRANCE</span> › <span class="active">{{ pageTitle }}</span>
-    </nav>
+    <h2 class="title">Kategori: {{ category }}</h2>
 
-    <!-- Title -->
-    <h1 class="page-title">{{ pageTitle }}</h1>
+    <div v-if="products.length === 0" class="empty-message">
+      <p>Tidak ada produk dalam kategori ini.</p>
+    </div>
 
-    <!-- Layout -->
-    <div class="layout">
-      <!-- Filter Sidebar -->
-      <FilterSidebar :price="price" :priceRange="priceRange" :subcategories="subcategories" />
-
-      <!-- Product Section -->
-      <section class="products">
-        <div class="controls">
-          <select>
-            <option>Price: Lowest - Highest</option>
-            <option>Price: Highest - Lowest</option>
-          </select>
-          <div class="sort-item">
-            <label for="show">Tampilkan</label>
-            <select id="show">
-              <option>12 Item</option>
-              <option>24 Item</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="product-grid">
-          <ProductCard
-            v-for="product in filteredProducts"
-            :key="product.id"
-            :product="product"
-          />
-        </div>
-      </section>
+    <div class="product-grid">
+      <ProductCard
+        v-for="product in products"
+        :key="product.productId"
+        :product="product"
+      />
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios'
-import { ref, computed, onMounted } from 'vue'
+<script setup>
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-
-import FilterSidebar from '@/components/FilterSidebar.vue'
+import { fetchProductsByCategory } from '@/api/productApi'
 import ProductCard from '@/components/ProductCard.vue'
 
-export default {
-  components: {
-    FilterSidebar,
-    ProductCard
-  },
-  setup() {
-    const route = useRoute()
-    const type = route.params.type || 'men'
+const route = useRoute()
+const category = ref(route.params.category)
+const products = ref([])
 
-    const allProducts = ref([])
-
-    // Fetch products from API
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('http://localhost:8081/api/products')
-        allProducts.value = response.data
-      } catch (error) {
-        console.error('Gagal mengambil produk:', error)
-      }
-    }
-
-    onMounted(() => {
-      fetchProducts()
-    })
-
-    // Filter berdasarkan kategori dari URL
-    const filteredProducts = computed(() =>
-      allProducts.value.filter(
-        (p) => p.category?.toLowerCase() === type.toLowerCase()
-      )
-    )
-
-    const pageTitle = computed(() => {
-      const titles = {
-        men: 'FOR MEN',
-        women: 'FOR WOMEN',
-        unisex: 'UNISEX'
-      }
-      return titles[type] || 'CATEGORY'
-    })
-
-    // Dummy filter sidebar
-    const subcategories = ['EAU DE PARFUM', 'EAU DE TOILETTE', 'EXTRAIT DE PARFUM']
-    const price = 3139000
-    const priceRange = { max: 3139000 }
-
-    return {
-      filteredProducts,
-      pageTitle,
-      subcategories,
-      price,
-      priceRange
-    }
+const loadProducts = async () => {
+  try {
+    products.value = await fetchProductsByCategory(category.value)
+  } catch (err) {
+    console.error('Gagal mengambil produk kategori:', err)
   }
 }
+
+onMounted(loadProducts)
+
+// Jika kategori berubah (navigasi ulang), ambil ulang datanya
+watch(() => route.params.category, (newVal) => {
+  category.value = newVal
+  loadProducts()
+})
 </script>
 
 <style scoped>
 .category-page {
+  max-width: 1200px;
+  margin: auto;
   padding: 2rem;
-  font-family: 'Helvetica Neue', sans-serif;
 }
 
-.breadcrumb {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 0.5rem;
-}
-
-.breadcrumb .active {
+.title {
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #C30010;
-  font-family: Poppins;
-}
-
-.page-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  color: #000;
-  font-family: Poppins;
-}
-
-.layout {
-  display: flex;
-  gap: 2rem;
-}
-
-.products {
-  flex: 1;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-between;
   margin-bottom: 1rem;
-}
-
-.controls select {
-  padding: 0.4rem 1rem;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-
-.sort-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  text-transform: capitalize;
 }
 
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
+}
+
+.empty-message {
+  text-align: center;
+  font-style: italic;
+  color: #777;
 }
 </style>

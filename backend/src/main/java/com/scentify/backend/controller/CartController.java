@@ -1,53 +1,97 @@
 package com.scentify.backend.controller;
 
-import com.scentify.backend.model.Cart;
-import com.scentify.backend.service.CartService;
+import com.scentify.backend.dto.CartItemDTO;
+import com.scentify.backend.dto.CheckoutRequestDTO;
+import com.scentify.backend.model.Order;
+import com.scentify.backend.service.BuyerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/cart")
-@CrossOrigin(origins = "http://localhost:8081")
 public class CartController {
 
-    private final CartService cartService;
+    private final BuyerService buyerService;
 
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
+    public CartController(BuyerService buyerService) {
+        this.buyerService = buyerService;
     }
 
-    // Dapatkan cart berdasarkan buyerId
-    @GetMapping("/{buyerId}")
-    public ResponseEntity<Cart> getCart(@PathVariable Long buyerId) {
-        return ResponseEntity.ok(cartService.getCart(buyerId));
+    // ✅ Ambil isi cart dengan detail produk dan quantity
+    @GetMapping("/{buyerId}/items")
+    public ResponseEntity<List<CartItemDTO>> getCartItems(@PathVariable Long buyerId) {
+        return ResponseEntity.ok(buyerService.getCartItemsWithDetails(buyerId));
     }
 
-    // Tambah item ke cart buyer tertentu
-    @PostMapping("/{buyerId}/add")
-    public ResponseEntity<String> addItem(
-            @PathVariable Long buyerId,
-            @RequestBody CartItemRequest request) {
-        cartService.addItem(buyerId, request.getProductId(), request.getQuantity());
-        return ResponseEntity.ok("Item added to cart.");
+    // ✅ Tambah produk ke cart (via JSON)
+    @PostMapping("/add")
+    public ResponseEntity<String> addItem(@RequestBody CartItemRequest request) {
+        String result = buyerService.addToCart(request.getBuyerId(), request.getProductId(), request.getQuantity());
+        return ResponseEntity.ok(result);
     }
 
-    // Dapatkan total harga cart buyer tertentu
+    // ✅ Update quantity produk di cart
+    @PutMapping("/{buyerId}/cart/{productId}")
+    public ResponseEntity<String> updateItemQty(@PathVariable Long buyerId,
+                                                @PathVariable String productId,
+                                                @RequestBody Map<String, Integer> body) {
+        int quantity = body.getOrDefault("quantity", 1);
+        String result = buyerService.updateCartItemQuantity(buyerId, productId, quantity);
+        return ResponseEntity.ok(result);
+    }
+
+    // ✅ Hapus produk dari cart
+    @DeleteMapping("/{buyerId}/cart/{productId}")
+    public ResponseEntity<String> removeItem(@PathVariable Long buyerId,
+                                             @PathVariable String productId) {
+        String result = buyerService.removeFromCart(buyerId, productId);
+        return ResponseEntity.ok(result);
+    }
+
+    // ✅ Hitung total harga
     @GetMapping("/{buyerId}/total")
     public ResponseEntity<Double> getTotal(@PathVariable Long buyerId) {
-        return ResponseEntity.ok(cartService.calculateTotal(buyerId));
+        double total = buyerService.getCartItemsWithDetails(buyerId).stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+        return ResponseEntity.ok(total);
     }
 
-    // Kosongkan cart buyer tertentu
+    // ✅ Kosongkan keranjang
     @PostMapping("/{buyerId}/clear")
     public ResponseEntity<String> clearCart(@PathVariable Long buyerId) {
-        cartService.clearCart(buyerId);
-        return ResponseEntity.ok("Cart cleared.");
+        String result = buyerService.clearCart(buyerId);
+        return ResponseEntity.ok(result);
     }
 
-    // DTO request body hanya mengandung productId dan quantity
+    // ✅ Checkout & Buat Order (pakai DTO)
+    @PostMapping("/{buyerId}/checkout")
+    public ResponseEntity<?> placeOrder(@PathVariable Long buyerId, @RequestBody CheckoutRequestDTO body) {
+        try {
+            String paymentMethod = body.getMethod();
+            Order order = buyerService.placeOrder(buyerId, paymentMethod);
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // ✅ DTO untuk JSON request tambah item
     public static class CartItemRequest {
+        private Long buyerId;
         private String productId;
         private int quantity;
+
+        public Long getBuyerId() {
+            return buyerId;
+        }
+
+        public void setBuyerId(Long buyerId) {
+            this.buyerId = buyerId;
+        }
 
         public String getProductId() {
             return productId;

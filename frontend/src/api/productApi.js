@@ -1,12 +1,9 @@
 // src/api/productApi.js
-import axios from 'axios'
+import axios from './axiosInstance'
 
-const API_URL = 'http://localhost:8081/api/';
-
-// Ambil semua produk
 export const fetchAllProducts = async () => {
   try {
-    const res = await axios.get(`${API_URL}/products`)
+    const res = await axios.get('/products')
     return res.data
   } catch (err) {
     console.error('Error fetching all products:', err)
@@ -14,10 +11,9 @@ export const fetchAllProducts = async () => {
   }
 }
 
-// Ambil produk berdasarkan ID
 export const fetchProductById = async (id) => {
   try {
-    const res = await axios.get(`${API_URL}/products/${id}`)
+    const res = await axios.get(`/products/${id}`)
     return res.data
   } catch (err) {
     console.error(`Error fetching product by ID (${id}):`, err)
@@ -25,15 +21,24 @@ export const fetchProductById = async (id) => {
   }
 }
 
-// Ambil produk berdasarkan kategori
 export const fetchProductsByCategory = async (category) => {
   try {
-    const res = await axios.get(`${API_URL}/products`, {
+    const res = await axios.get('/products', {
       params: { category }
     })
     return res.data
   } catch (err) {
     console.error(`Error fetching products by category (${category}):`, err)
+    throw err
+  }
+}
+
+export const deleteProductById = async (productId) => {
+  try {
+    const res = await axios.delete(`/admin/products/${productId}`)
+    return res.data
+  } catch (err) {
+    console.error(`Error deleting product (${productId}):`, err)
     throw err
   }
 }

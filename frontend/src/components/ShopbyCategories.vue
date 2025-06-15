@@ -1,21 +1,42 @@
 <template>
   <section id="shop-by-categories" class="shop-by-categories">
     <div class="category-cards">
-      <router-link to="/category/men" class="category-card">
+      <div
+        class="category-card"
+        @click="goToCategory('Men')"
+      >
         <img src="@/assets/men2.jpg" alt="Men Category" />
         <span>Men</span>
-      </router-link>
-      <router-link to="/category/women" class="category-card">
+      </div>
+
+      <div
+        class="category-card"
+        @click="goToCategory('Women')"
+      >
         <img src="@/assets/women2.jpg" alt="Women Category" />
         <span>Women</span>
-      </router-link>
-      <router-link to="/category/unisex" class="category-card">
+      </div>
+
+      <div
+        class="category-card"
+        @click="goToCategory('Unisex')"
+      >
         <img src="@/assets/couple1.jpg" alt="Unisex Category" />
         <span>Unisex</span>
-      </router-link>
+      </div>
     </div>
   </section>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const goToCategory = (category) => {
+  // route ke halaman produk berdasarkan kategori
+  router.push({ name: 'CategoryProduct', params: { category } })
+}
+</script>
 
 <style scoped>
 .shop-by-categories {

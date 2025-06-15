@@ -8,17 +8,21 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // primary key untuk entity Payment
+    private Long id;
 
-    private String method;  // misal "VISA", "Debit Card"
+    private String method;     // Contoh: "VISA", "ShopeePay", "COD"
+    private String status;     // Contoh: "SUCCESS", "FAILED"
+    private double amount;     // Jumlah uang yang dibayarkan
 
     public Payment() {}
 
-    public Payment(String method) {
+    public Payment(String method, String status, double amount) {
         this.method = method;
+        this.status = status;
+        this.amount = amount;
     }
 
-    // Getter dan Setter untuk id
+    // Getter & Setter
     public Long getId() {
         return id;
     }
@@ -27,12 +31,27 @@ public class Payment {
         this.id = id;
     }
 
-    // Getter dan Setter untuk method
     public String getMethod() {
         return method;
     }
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }

@@ -2,17 +2,32 @@ package com.scentify.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    // Generate key yang aman (bisa juga di-generate sekali dan disimpan di konfigurasi)
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private SecretKey SECRET_KEY;
+
+    @PostConstruct
+    public void init() {
+        // Gunakan SHA-256 key 32-byte
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            throw new IllegalArgumentException("Secret key too short, must be at least 32 bytes");
+        }
+        this.SECRET_KEY = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -29,7 +44,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY) // pakai SecretKey langsung
+                .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -39,33 +54,28 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    // Generate token dengan username dan role di dalam claims
-    // Generate token dengan username dan role di dalam claims
     public String generateToken(String username, String rawRole) {
-        // Ubah role ke uppercase untuk konsistensi, dan validasi agar tidak kosong
         String role = (rawRole != null) ? rawRole.toUpperCase() : "BUYER";
 
         if (!role.equals("ADMIN") && !role.equals("BUYER")) {
             role = "BUYER"; // fallback default
         }
 
+        // HANYA menyimpan subject (username) + role
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", role)  // simpan role string yang valid
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) 
-                .signWith(SECRET_KEY) // pakai SecretKey langsung
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 hari
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-
-    // Validasi token berdasarkan username dan expiration
     public Boolean validateToken(String token, String username) {
         final String tokenUsername = extractUsername(token);
         return (tokenUsername.equals(username) && !isTokenExpired(token));
     }
 
-    // Extract role dari token (jika diperlukan)
     public String extractRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }

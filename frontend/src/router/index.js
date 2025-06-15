@@ -1,20 +1,22 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 
 // Halaman Umum
-import MenuPage from '../pages/MenuPage.vue';
-import CartPage from '../pages/CartPage.vue';
-import PaymentPage from '../pages/PaymentPage.vue';
-import LoginPage from '../pages/LoginPage.vue';
-import RegisterPage from '@/pages/RegisterPage.vue';
-import ProfilePage from '@/pages/ProfilePage.vue';
-import CategoryPage from '@/pages/CategoryPage.vue';
-
+import MenuPage from '../pages/MenuPage.vue'
+import CartPage from '../pages/CartPage.vue'
+import PaymentPage from '../pages/PaymentPage.vue'
+import LoginPage from '../pages/LoginPage.vue'
+import RegisterPage from '@/pages/RegisterPage.vue'
+import ProfilePage from '@/pages/ProfilePage.vue'
+import CategoryPage from '@/pages/CategoryPage.vue'
+import ProductDetail from '@/pages/ProductDetail.vue'
+import ProductList from '@/pages/ProductList.vue'
+import OrderHistoryPage from '@/pages/OrderHistoryPage.vue' // ✅ Tambahkan ini
 
 // Halaman Admin
-import AdminView from '@/pages/AdminView.vue';
-import AdminDetail from '@/pages/AdminDetail.vue';
-import AddProduct from '@/pages/AddProduct.vue';
-import ProductDetail from '@/pages/ProductDetail.vue';
+import AdminView from '@/pages/AdminView.vue'
+import AdminDetail from '@/pages/AdminDetail.vue'
+import AddProduct from '@/pages/AddProduct.vue'
+import EditProduct from '@/pages/EditProduct.vue'
 
 const routes = [
   // Halaman Umum
@@ -25,7 +27,7 @@ const routes = [
   { path: '/register', component: RegisterPage },
   { path: '/profile', component: ProfilePage },
   {
-    path: '/category/:type',
+    path: '/category/:category',
     name: 'CategoryPage',
     component: CategoryPage,
     props: true
@@ -35,12 +37,28 @@ const routes = [
     name: 'ProductDetail',
     component: ProductDetail
   },
+  {
+    path: '/products',
+    name: 'ProductList',
+    component: ProductList
+  },
+  {
+    path: '/history', // ✅ Route untuk riwayat transaksi buyer
+    name: 'OrderHistory',
+    component: OrderHistoryPage
+  },
 
   // Halaman Admin
   {
     path: '/admin',
     name: 'AdminView',
     component: AdminView,
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/edit/:id',
+    name: 'EditProduct',
+    component: EditProduct,
     meta: { requiresAdmin: true }
   },
   {
@@ -54,35 +72,29 @@ const routes = [
     name: 'AddProduct',
     component: AddProduct,
     meta: { requiresAdmin: true }
-  },
-  
-  {
-    path: '/product/:id',
-    name: 'ProductDetail',
-    component: ProductDetail,
   }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-// Middleware: Cek akses admin
+// ✅ Middleware Cek Role Admin
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  const role = localStorage.getItem('userRole');
+  const token = localStorage.getItem('token')
+  const role = localStorage.getItem('role')
 
   if (to.meta.requiresAdmin) {
-    if (isLoggedIn && role?.toUpperCase() === 'ADMIN') {
-      next();
+    if (token && role?.toUpperCase() === 'ADMIN') {
+      next()
     } else {
-      alert('Akses hanya untuk admin!');
-      next('/login');
+      alert('Akses hanya untuk admin!')
+      next('/login')
     }
   } else {
-    next();
+    next()
   }
-});
+})
 
-export default router;
+export default router

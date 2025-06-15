@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:8081") // sesuaikan port frontend jika beda
 public class ProductController {
 
     private final ProductService productService;

@@ -9,7 +9,7 @@ import java.util.List;
 public class Order {
 
     @Id
-    private String id; // pakai String karena format "ORD123456"
+    private String id; // format "ORD123456" ditentukan manual di service
 
     @ManyToOne
     @JoinColumn(name = "buyer_id")
@@ -23,6 +23,7 @@ public class Order {
 
     private double totalAmount;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Date orderDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -30,11 +31,9 @@ public class Order {
 
     public Order() {}
 
-    // getter setter id sebagai String
+    // Getter & Setter
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
-    // getter setter lainnya ...
 
     public Buyer getBuyer() { return buyer; }
     public void setBuyer(Buyer buyer) { this.buyer = buyer; }
@@ -54,9 +53,8 @@ public class Order {
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) {
         this.items = items;
-        // Set back-reference ke Order di setiap OrderItem
-        if(items != null) {
-            for(OrderItem item : items) {
+        if (items != null) {
+            for (OrderItem item : items) {
                 item.setOrder(this);
             }
         }

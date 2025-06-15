@@ -1,34 +1,58 @@
 <template>
   <div class="cart-page">
-    <h2>Keranjang Belanja</h2>
+    <h2>Keranjang Saya</h2>
 
     <div v-if="!Array.isArray(cart) || cart.length === 0">
       <p>Keranjang kamu kosong.</p>
     </div>
 
-    <div v-else class="cart-list">
-      <div v-for="item in cart" :key="item.productId" class="cart-item">
-        <img :src="resolveImage(item.image)" :alt="item.name" class="item-image" />
-        <div class="item-info">
-          <h3>{{ item.name }}</h3>
-          <p>Rp {{ (item.price || 0).toLocaleString('id-ID') }}</p>
-          <div class="quantity-control">
-            <label>Jumlah:</label>
-            <input
-              type="number"
-              v-model.number="item.quantity"
-              min="1"
-              @change="updateItem(item)"
-            />
-          </div>
-          <button @click="removeItem(item.productId)">Hapus</button>
+    <div v-else>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Produk</th>
+            <th>Harga</th>
+            <th>Jumlah</th>
+            <th>Total</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in cart" :key="item.productId">
+            <td class="product-cell">
+              <img :src="resolveImage(item.image)" :alt="item.name" class="item-image" />
+              <span>{{ item.name }}</span>
+            </td>
+            <td>Rp {{ (item.price || 0).toLocaleString('id-ID') }}</td>
+            <td>
+              <div class="quantity-control">
+                <button @click="item.quantity > 1 && updateItemQty(item, item.quantity - 1)">−</button>
+                <input
+                  type="number"
+                  v-model.number="item.quantity"
+                  min="1"
+                  @change="updateItem(item)"
+                />
+                <button @click="updateItemQty(item, item.quantity + 1)">+</button>
+              </div>
+            </td>
+            <td class="item-total">
+              Rp {{ (item.price * item.quantity).toLocaleString('id-ID') }}
+            </td>
+            <td>
+              <button class="delete-btn" @click="removeItem(item.productId)">Hapus</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cart-summary">
+        <div>
+          <p>Dipilih: {{ cart.length }} produk</p>
+          <p><strong>Subtotal:</strong> Rp {{ totalPrice.toLocaleString('id-ID') }}</p>
         </div>
+        <button class="checkout-btn" @click="checkout">Checkout</button>
       </div>
-
-      <hr />
-      <h3>Total: Rp {{ totalPrice.toLocaleString('id-ID') }}</h3>
-
-      <button class="checkout-btn" @click="checkout">Bayar Sekarang</button>
     </div>
   </div>
 </template>
@@ -84,6 +108,11 @@ export default {
         console.error('Gagal update jumlah:', err)
       }
     },
+    updateItemQty(item, newQty) {
+      if (newQty < 1) return
+      item.quantity = newQty
+      this.updateItem(item)
+    },
     async checkout() {
       const buyerId = localStorage.getItem('userId')
       if (!buyerId) return alert('Login terlebih dahulu')
@@ -111,52 +140,100 @@ export default {
 
 <style scoped>
 .cart-page {
-  max-width: 800px;
-  margin: auto;
-  padding: 2rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-.cart-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.cart-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  max-width: 1000px;
+  margin: 40px auto;
   padding: 1rem;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  background: #fff;
+  font-family: Poppins;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.cart-table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .item-image {
-  width: 120px;
-  height: 120px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
 }
 
-.item-info {
-  flex: 1;
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .quantity-control input {
-  width: 60px;
-  padding: 4px;
-  margin-left: 10px;
+  width: 50px;
+  text-align: center;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.quantity-control button {
+  background-color: #eee;
+  border: none;
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.quantity-control button:hover {
+  background-color: #ddd;
+}
+
+.delete-btn {
+  background-color: #ffebeb;
+  color: #cc0000;
+  border: 1px solid #cc0000;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #ffcccc;
+}
+
+.cart-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 }
 
 .checkout-btn {
-  margin-top: 1rem;
-  padding: 10px 20px;
   background-color: #45000D;
   color: white;
   border: none;
+  padding: 12px 24px;
   border-radius: 8px;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
 }

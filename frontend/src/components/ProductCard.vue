@@ -140,16 +140,23 @@ export default {
 <style scoped>
 .product-card {
   width: 220px;
+  flex: 0 0 auto;
   border-radius: 12px;
   background-color: #fff;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12); /* <<< LEBIH KUAT DAN LEBAR */
   overflow: hidden;
   position: relative;
   font-family: Poppins;
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  transition: box-shadow 0.3s ease; /* <<< animasi halus saat hover */
 }
+
+.product-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+}
+
 
 .discount-badge {
   position: absolute;
@@ -182,7 +189,7 @@ export default {
   left: 0;
   right: 0;
   background-color: #45000D;
-  color: white;
+  color: #F7E7CE;
   font-size: 12px;
   font-weight: bold;
   padding: 8px;

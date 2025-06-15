@@ -5,7 +5,7 @@
 
     <!-- Best Deals Section -->
     <section class="best-deals">
-      <div class="best-deals-header">
+      <div class="section-header">
         <h2 class="section-title">Best Deals</h2>
         <div class="slider-buttons">
           <button @click="scrollLeftDeals" aria-label="Scroll Left">&#10094;</button>
@@ -13,12 +13,13 @@
         </div>
       </div>
 
-      <div class="best-deals-wrapper">
-        <div class="best-deals-grid" ref="bestDealsScroll">
+      <div class="scroll-wrapper" ref="bestDealsScroll">
+        <div class="scroll-row">
           <ProductCard
             v-for="item in bestDeals"
             :key="item.productId"
             :product="item"
+            class="scroll-item"
           />
         </div>
       </div>
@@ -26,8 +27,7 @@
 
     <!-- Best Seller Section -->
     <section class="best-seller">
-      <div class="best-seller-header">
-        <section id="best-seller" class="best-seller"></section>
+      <div class="section-header">
         <h2 class="section-title">Best Seller</h2>
         <div class="slider-buttons">
           <button @click="scrollLeft" aria-label="Scroll Left">&#10094;</button>
@@ -35,12 +35,13 @@
         </div>
       </div>
 
-      <div class="best-seller-wrapper">
-        <div class="best-seller-grid" ref="bestSellerScroll">
+      <div class="scroll-wrapper" ref="bestSellerScroll">
+        <div class="scroll-row">
           <ProductCard
             v-for="item in topSellers"
             :key="item.productId"
             :product="item"
+            class="scroll-item"
           />
         </div>
       </div>
@@ -77,7 +78,7 @@ onMounted(async () => {
     bestDeals.value = all
       .filter(p => p.discount >= 20)
       .sort((a, b) => b.discount - a.discount)
-      .slice(0, 8)
+      .slice(0, 10)
 
     const { data: bestSellerData } = await axios.get('/products/bestsellers')
     topSellers.value = bestSellerData
@@ -109,7 +110,7 @@ const lihatProduk = () => {
 .menu-page {
   font-family: 'Poppins', sans-serif;
   padding: 2rem;
-  background: #f8f8f8;
+  background: #FFF;
 }
 
 .section-title {
@@ -117,39 +118,29 @@ const lihatProduk = () => {
   font-weight: 700;
   color: #45000d;
   margin-bottom: 1rem;
+  margin-top: 3rem;
 }
 
-.best-deals,
-.shop-by-categories {
-  margin: 3rem 0;
-}
-
-.best-deals-header {
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.best-deals-wrapper {
+.scroll-wrapper {
   overflow-x: auto;
+  white-space: nowrap;
   padding: 1rem 0;
 }
 
-.best-deals-grid {
-  display: flex;
+.scroll-row {
+  display: inline-flex;
   gap: 1rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
 }
 
-.best-seller {
-  margin: 4rem 0;
-}
-
-.best-seller-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.scroll-item {
+  flex: 0 0 auto;
+  width: 220px;
 }
 
 .slider-buttons button {
@@ -158,18 +149,6 @@ const lihatProduk = () => {
   font-size: 1.5rem;
   cursor: pointer;
   color: #45000d;
-}
-
-.best-seller-wrapper {
-  overflow-x: auto;
-  padding: 1rem 0;
-}
-
-.best-seller-grid {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-behavior: smooth;
 }
 
 .lihat-produk-btn {

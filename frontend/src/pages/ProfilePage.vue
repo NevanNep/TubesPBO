@@ -117,7 +117,7 @@ export default {
 }
 
 .edit-btn {
-  background-color: #F7E7CE;
+  background-color: #F1F0ED;
   color: #45000D;
   border: 1px solid #45000D;
 }

@@ -4,9 +4,9 @@
     <div class="image-section">
       <img :src="product.image" :alt="product.name" class="main-image" />
       <div class="thumbnail-container">
-        <img :src="product.image" class="thumbnail" />
-        <img :src="product.image" class="thumbnail" />
-        <img :src="product.image" class="thumbnail" />
+        <img :src="product.image" class="thumbnail" alt="Thumbnail 1" />
+        <img :src="product.image" class="thumbnail" alt="Thumbnail 2" />
+        <img :src="product.image" class="thumbnail" alt="Thumbnail 3" />
       </div>
     </div>
 
@@ -60,7 +60,7 @@
     </div>
   </div>
 
-  <!-- ⬇️ Section Ulasan Pengguna -->
+  <!-- Section Ulasan Pengguna -->
   <div v-if="product" class="review-section container mt-5" style="width: 100%;">
     <hr class="my-4" />
     <h3 class="fw-bold mb-2">Ulasan Pengguna</h3>
@@ -69,6 +69,7 @@
     <div class="mb-4">
       <input v-model="newReview.name" class="input mb-2" placeholder="Nama Anda" />
       <select v-model="newReview.rating" class="input mb-2">
+        <option disabled value="">Pilih Rating</option>
         <option v-for="n in 5" :key="n" :value="n">{{ n }} Bintang</option>
       </select>
       <textarea v-model="newReview.comment" class="input mb-2" rows="3" placeholder="Komentar..."></textarea>
@@ -108,14 +109,24 @@ const cartStore = useCartStore()
 const product = ref(null)
 const quantity = ref(1)
 
-onMounted(async () => {
-  const id = parseInt(route.params.id)
-
+async function loadProduct(id) {
   if (!productStore.products.length) {
     await productStore.fetchProducts()
   }
-
   product.value = productStore.getProductById(id)
+
+  if (!product.value) {
+    alert('Produk tidak ditemukan.')
+    router.push('/')
+  }
+}
+
+onMounted(() => {
+  loadProduct(parseInt(route.params.id))
+})
+
+watch(() => route.params.id, async (newId) => {
+  await loadProduct(parseInt(newId))
 })
 
 function increaseQty() {
@@ -136,7 +147,7 @@ function addToCart() {
   }
 }
 
-// 📝 Review
+// Review
 const reviews = ref([])
 const newReview = ref({
   name: '',
@@ -146,18 +157,18 @@ const newReview = ref({
 
 function loadReviews() {
   const allReviews = JSON.parse(localStorage.getItem('reviews') || '[]')
-  reviews.value = allReviews.filter(r => r.productId === product.value?.id)
+  reviews.value = allReviews.filter(r => r.productId === product.value?.productId)
 }
 
 function submitReview() {
-  if (!newReview.value.name || !newReview.value.comment) {
-    alert("Nama dan komentar wajib diisi!")
+  if (!newReview.value.name || !newReview.value.comment || !newReview.value.rating) {
+    alert("Nama, rating, dan komentar wajib diisi!")
     return
   }
 
   const reviewData = {
     ...newReview.value,
-    productId: product.value.id,
+    productId: product.value.productId,
     date: new Date().toISOString().split('T')[0]
   }
 
@@ -174,15 +185,6 @@ watch(product, (val) => {
   if (val) loadReviews()
 })
 </script>
-
-<style scoped>
-/* ... semua style kamu tetap digunakan tanpa diubah ... */
-
-textarea.input {
-  resize: vertical;
-}
-</style>
-
 
 <style scoped>
 .product-detail-container {
@@ -338,6 +340,10 @@ textarea.input {
 
 .btn-outline:hover {
   background-color: #fef0f1;
+}
+
+textarea.input {
+  resize: vertical;
 }
 
 .not-found {

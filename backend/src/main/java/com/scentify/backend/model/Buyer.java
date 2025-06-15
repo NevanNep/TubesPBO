@@ -1,8 +1,6 @@
 package com.scentify.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +9,21 @@ import java.util.List;
 public class Buyer extends User {
 
     @ElementCollection
+    @CollectionTable(name = "buyer_order_history", joinColumns = @JoinColumn(name = "buyer_id"))
+    @Column(name = "product_id")
     private List<String> orderHistory = new ArrayList<>();
 
     @ElementCollection
+    @CollectionTable(name = "buyer_cart", joinColumns = @JoinColumn(name = "buyer_id"))
+    @Column(name = "product_id")
     private List<String> cart = new ArrayList<>();
 
     public Buyer() {
         // constructor kosong untuk JPA
     }
 
-    public Buyer(Long id, String nama, String email, String password, String alamat,String role) {
-        super(id, nama, email, password, alamat,role);
+    public Buyer(Long id, String nama, String email, String password, String alamat, String role) {
+        super(id, nama, email, password, alamat, role);
     }
 
     public void addToCart(String productId, int quantity) {
@@ -37,5 +39,17 @@ public class Buyer extends User {
 
     public List<String> getCart() {
         return cart;
+    }
+
+    public void setCart(List<String> cart) {
+        this.cart = cart;
+    }
+
+    public List<String> getOrderHistory() {
+        return orderHistory;
+    }
+
+    public void setOrderHistory(List<String> orderHistory) {
+        this.orderHistory = orderHistory;
     }
 }

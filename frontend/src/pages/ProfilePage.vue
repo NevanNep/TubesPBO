@@ -7,8 +7,10 @@
           <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
         </svg>
       </div>
-      <h2 class="username">Halo, {{ username || 'User' }}!</h2>
-      <p class="welcome-text">Selamat datang di halaman profil Anda.</p>
+      <h2 class="username">Halo, {{ username }}!</h2>
+      <p class="welcome-text">
+        Selamat datang di halaman profil Anda sebagai <strong>{{ role }}</strong>.
+      </p>
 
       <div class="action-buttons">
         <button class="edit-btn" @click="editProfile">Edit Profil</button>
@@ -23,21 +25,24 @@ export default {
   name: 'ProfilePage',
   data() {
     return {
-      username: '',
+      username: 'User',
+      role: 'BUYER'
     };
   },
   mounted() {
-    this.username = localStorage.getItem('username') || '';
+    const storedName = localStorage.getItem('username')
+    const storedRole = localStorage.getItem('role')
+
+    this.username = storedName || 'User'
+    this.role = (storedRole || 'BUYER').toUpperCase()
   },
   methods: {
     logout() {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('username');
-      this.$router.push('/');
+      localStorage.clear()
+      this.$router.push('/login')
     },
     editProfile() {
-      alert('Fitur edit profil belum tersedia.');
-      // Redirect ke halaman edit profil jika sudah dibuat: this.$router.push('/edit-profile')
+      alert('Fitur edit profil belum tersedia.')
     }
   }
 };

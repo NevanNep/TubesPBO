@@ -1,48 +1,54 @@
 <template>
-  <div class="container my-4">
-    <h2 class="mb-4 fw-bold">Edit Produk</h2>
+  <div class="admin-detail">
+    <h2>Detail Produk</h2>
 
-    <form @submit.prevent="updateProduct" class="p-4 border rounded bg-light">
-      <input v-model="product.name" placeholder="Nama Produk" class="form-control mb-3" />
-      <input v-model="product.brand" placeholder="Brand" class="form-control mb-3" />
-      <input v-model="product.price" type="number" placeholder="Harga" class="form-control mb-3" />
-      <input v-model="product.image" placeholder="URL Gambar" class="form-control mb-3" />
-      <button class="btn btn-success">Simpan Perubahan</button>
-    </form>
+    <div v-if="!product">
+      <p>Memuat data produk...</p>
+    </div>
+
+    <div v-else>
+      <img :src="product.image" :alt="product.name" />
+      <h3>{{ product.name }}</h3>
+      <p>Brand: {{ product.brand }}</p>
+      <p>Kategori: {{ product.category }}</p>
+      <p>Harga: Rp {{ product.price.toLocaleString('id-ID') }}</p>
+      <p>Diskon: {{ product.discount }}%</p>
+      <p>Stok: {{ product.stock }}</p>
+      <p>Rating: {{ product.rating }} / 5</p>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      product: {}
-    };
-  },
-  mounted() {
-    const id = Number(this.$route.params.id);
-    const allProducts = JSON.parse(localStorage.getItem('products') || '[]');
-    const found = allProducts.find(p => p.id === id);
-    if (!found) {
-      alert('Produk tidak ditemukan!');
-      this.$router.push('/admin');
-      return;
-    }
-    this.product = { ...found };
-  },
-  methods: {
-    updateProduct() {
-      const id = Number(this.$route.params.id);
-      let allProducts = JSON.parse(localStorage.getItem('products') || '[]');
-      const index = allProducts.findIndex(p => p.id === id);
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { fetchProductById } from '@/api/productApi'
 
-      if (index !== -1) {
-        allProducts[index] = { ...this.product };
-        localStorage.setItem('products', JSON.stringify(allProducts));
-        alert('Produk berhasil diperbarui!');
-        this.$router.push('/admin');
-      }
-    }
+const route = useRoute()
+const productId = route.params.id
+const product = ref(null)
+
+onMounted(async () => {
+  try {
+    product.value = await fetchProductById(productId)
+  } catch (err) {
+    console.error('Gagal mengambil data produk:', err)
   }
-};
+})
 </script>
+
+<style scoped>
+.admin-detail {
+  max-width: 600px;
+  margin: auto;
+  padding: 2rem;
+}
+
+.admin-detail img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+</style>

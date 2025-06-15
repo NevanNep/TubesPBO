@@ -1,270 +1,203 @@
 <template>
   <header class="navbar">
-    <div class="navbar-top">
+    <div class="navbar-container">
       <!-- Logo -->
-      <div class="navbar-left">
-        <router-link to="/">
-         <img src="@/assets/newnew.png" alt="Scentify Logo" class="logo" />
-        </router-link>
-
-      </div>
+      <router-link to="/" class="logo">SCENTIFY</router-link>
 
       <!-- Menu Tengah -->
-      <nav class="navbar-center">
-        <router-link to="#">SHOP BY CATEGORIES</router-link>
+      <nav class="navbar-menu">
+        <router-link to="/category/Men">SHOP BY CATEGORIES</router-link>
         <router-link to="#">BEST SELLER</router-link>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
-        <router-link
-          v-if="isLoggedIn && userRole === 'admin'"
-          to="/admin"
-          style="color: #ffdd99"
-        >
-          ADMIN
-        </router-link>
-      </nav>
+        <router-link to="/products">PRODUCT</router-link>
 
-      <!-- Menu Kanan -->
-      <div class="navbar-right">
-        <!-- Search -->
-        <button class="icon-btn" aria-label="Search">
-          <svg class="icon" viewBox="0 0 24 24" width="22" height="22">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none" />
-            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" />
-          </svg>
-        </button>
-
-        <!-- Jika belum login -->
-        <div v-if="!isLoggedIn">
-          <router-link to="/login" class="login-btn">
-            LOGIN <span class="divider">|</span> DAFTAR
-          </router-link>
-        </div>
-
-        <!-- Jika sudah login: dropdown -->
-        <div v-else class="profile-dropdown" @click="toggleDropdown">
-          <svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
-          </svg>
-          <div v-if="dropdownOpen" class="dropdown-menu">
-            <p class="dropdown-user">Halo, {{ username || 'User' }}</p>
-            <router-link to="/profile">Profil</router-link>
-            <button @click="logout">Logout</button>
+        <!-- Menu Admin (khusus admin) -->
+        <div v-if="isAdmin" class="admin-dropdown" @mouseenter="showAdmin = true" @mouseleave="showAdmin = false">
+          <span class="admin-label">ADMIN ▾</span>
+          <div v-if="showAdmin" class="admin-menu">
+            <router-link to="/admin">Kelola Produk</router-link>
+            <router-link to="/admin/add">Tambah Produk</router-link>
+            <router-link to="/admin/users">Kelola User</router-link>
+            <router-link to="/admin/orders">Kelola Pesanan</router-link>
           </div>
         </div>
+      </nav>
 
-        <!-- Cart -->
-        <router-link to="/cart" class="cart-link" aria-label="Cart">
-          <svg class="icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
-            <circle cx="7" cy="21" r="1" />
-            <circle cx="20" cy="21" r="1" />
-          </svg>
+      <!-- Ikon Kanan -->
+      <div class="navbar-icons">
+        <button aria-label="Search"><i class="fas fa-search"></i></button>
+
+        <router-link v-if="isLoggedIn" to="/profile" aria-label="User">
+          <i class="fas fa-user"></i>
         </router-link>
+
+        <router-link v-if="isLoggedIn" to="/cart" aria-label="Cart">
+          <i class="fas fa-shopping-cart"></i>
+        </router-link>
+
+        <!-- ✅ Tambahan: Riwayat hanya untuk buyer -->
+        <router-link v-if="isBuyer" to="/history" aria-label="Riwayat">
+          <i class="fas fa-clock"></i>
+        </router-link>
+
+        <button v-if="isLoggedIn" @click="logout" class="logout-btn">Logout</button>
+        <router-link v-else to="/login" class="login-btn">Login</router-link>
       </div>
     </div>
   </header>
 </template>
 
-<script>
-export default {
-  name: "MainNavbar",
-  data() {
-    return {
-      isLoggedIn: false,
-      dropdownOpen: false,
-      username: '',
-      userRole: ''
-    };
-  },
-  mounted() {
-    this.checkLoginStatus();
-    window.addEventListener("storage", this.checkLoginStatus);
-  },
-  methods: {
-    checkLoginStatus() {
-      this.isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-      this.username = localStorage.getItem("username") || '';
-      this.userRole = localStorage.getItem("userRole") || '';
-    },
-    toggleDropdown() {
-      this.dropdownOpen = !this.dropdownOpen;
-    },
-    logout() {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("username");
-      localStorage.removeItem("userRole");
-      this.isLoggedIn = false;
-      this.userRole = '';
-      this.dropdownOpen = false;
-      this.$router.push("/");
-    }
-  },
-  beforeUnmount() {
-    window.removeEventListener("storage", this.checkLoginStatus);
-  }
-};
+<script setup>
+import { ref, onMounted, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const isLoggedIn = ref(false)
+const isAdmin = ref(false)
+const isBuyer = ref(false)
+const showAdmin = ref(false)
+
+const checkLogin = () => {
+  const token = localStorage.getItem('token')
+  const role = localStorage.getItem('role') || ''
+  isLoggedIn.value = !!token
+  isAdmin.value = role.toUpperCase() === 'ADMIN'
+  isBuyer.value = role.toUpperCase() === 'BUYER'
+}
+
+// Supaya auto update saat localStorage berubah
+watchEffect(() => {
+  checkLogin()
+})
+
+const logout = () => {
+  localStorage.clear()
+  isLoggedIn.value = false
+  isAdmin.value = false
+  isBuyer.value = false
+  router.push('/login')
+}
+
+onMounted(() => {
+  checkLogin()
+  window.addEventListener('storage', checkLogin)
+})
 </script>
 
 <style scoped>
-/* CSS sesuai yang Anda berikan sebelumnya (tidak berubah) */
 .navbar {
   background-color: #45000D;
   font-family: "Poppins", sans-serif;
-  border-bottom: 1px solid #eaeaea;
+  color: white;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid #300009;
 }
 
-.navbar-top {
+.navbar-container {
+  max-width: 1440px;
+  margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 30px;
-  gap: 20px;
+  padding: 0 3rem;
 }
 
-/* Kiri */
-.navbar-left {
-  flex-shrink: 0;
-}
-
+/* Logo */
 .logo {
-  height: 25px;
-  cursor: pointer;
-}
-
-/* Tengah */
-.navbar-center {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-}
-
-.navbar-center a {
-  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #F7E7CE;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  letter-spacing: 1px;
 }
 
-.navbar-center a:hover {
-  color: #F7E7CE;
-  transform: scale(1.1);
-}
-
-/* Kanan */
-.navbar-right {
+/* Menu Tengah */
+.navbar-menu {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 700px;
-  justify-content: flex-end;
-}
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+  flex: 1;
   justify-content: center;
-}
-
-.icon {
-  color: #fff;
-  transition: all 0.2s ease;
-  width: 25px;
-  height: 25px;
-}
-
-.icon:hover {
-  color: #F7E7CE;
-  transform: scale(1.1);
-}
-
-.login-btn {
-  padding: 6px 12px;
-  border: 1px solid #F7E7CE;
-  color: #F7E7CE;
-  background-color: transparent;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.login-btn:hover {
-  background-color: #F7E7CE;
-  color: #45000D;
-}
-
-.divider {
-  margin: 0 10px;
-}
-
-.profile-link,
-.cart-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.profile-link:hover .icon,
-.cart-link:hover .icon {
-  color: #F7E7CE;
-  transform: scale(1.1);
-}
-
-.profile-dropdown {
+  gap: 2rem;
   position: relative;
+}
+
+.navbar-menu a {
+  color: #F7E7CE;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar-menu a:hover {
+  color: #ffffff;
+}
+
+/* Dropdown Admin */
+.admin-dropdown {
+  position: relative;
+  color: #F7E7CE;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
 }
 
-.dropdown-menu {
+.admin-label:hover {
+  color: #ffffff;
+}
+
+.admin-menu {
   position: absolute;
-  top: 36px;
-  right: 0;
+  top: 30px;
   background: white;
+  border: 1px solid #ccc;
   color: #45000D;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 12px;
-  width: 160px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 0.9rem;
+  gap: 6px;
+  border-radius: 6px;
+  z-index: 99;
 }
 
-.dropdown-menu p {
-  margin: 0;
-  font-weight: 600;
+.admin-menu a {
+  text-decoration: none;
+  color: #45000D;
+  font-weight: 500;
 }
 
-.dropdown-menu button {
+.admin-menu a:hover {
+  color: #700014;
+}
+
+/* Ikon Kanan */
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.navbar-icons i {
+  font-size: 1.1rem;
+  color: #F7E7CE;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.navbar-icons i:hover {
+  color: #ffffff;
+  transform: scale(1.2);
+}
+
+.navbar-icons button {
   background: none;
   border: none;
-  color: #45000D;
-  padding: 0;
-  text-align: left;
   cursor: pointer;
+  font-weight: 600;
+  color: #F7E7CE;
+  transition: color 0.2s ease;
 }
 
-.dropdown-menu a,
-.dropdown-menu button {
-  transition: color 0.2s;
-}
-
-.dropdown-menu a:hover,
-.dropdown-menu button:hover {
-  color: #700014;
+.navbar-icons button:hover {
+  color: #ffffff;
 }
 </style>

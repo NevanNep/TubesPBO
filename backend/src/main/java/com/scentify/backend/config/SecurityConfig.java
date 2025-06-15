@@ -26,17 +26,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors()
+            .and()
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/admin/register", "/api/buyer/register", "/api/products").permitAll()
+                // ✅ Endpoint publik (akses tanpa token)
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/products",
+                    "/api/products/**",
+                    "/api/admin/register",
+                    "/api/buyer/register"
+                ).permitAll()
+
+                // ✅ Endpoint hanya untuk admin
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                // ✅ Endpoint hanya untuk buyer
+                .requestMatchers("/api/cart/**").hasRole("BUYER")
+
+                // ✅ Endpoint lain memerlukan token
                 .anyRequest().authenticated()
-                
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
-        // Pasang filter JWT sebelum filter autentikasi default Spring Security
+        // ✅ Pasang filter JWT sebelum filter bawaan Spring
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -51,7 +67,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
-
-//inn catatan kalau beneran kesimpen

@@ -1,144 +1,117 @@
 <template>
-  <div class="container py-5 d-flex flex-column align-items-center" style="min-height: 100vh; background-color: #f8f9fa;">
-    <h2 class="text-center mb-4 fw-bold" style="font-family: Poppins, Poppins; font-size: 2.5rem; color: black;">
-      Login
-    </h2>
-
-    <form @submit.prevent="login" class="border rounded p-4 shadow-sm bg-white" style="width: 100%; max-width: 400px;">
-      <div class="mb-3">
-        <label for="email" class="form-label fw-semibold">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          required
-          class="form-control"
-          placeholder="Masukkan email"
-          autocomplete="email"
-        />
-      </div>
-
-      <div class="mb-4">
-        <label for="password" class="form-label fw-semibold">Password</label>
-        <input
-          type="password"
-          id="password"
-          v-model="password"
-          required
-          class="form-control"
-          placeholder="Masukkan password"
-          autocomplete="current-password"
-        />
-      </div>
-
-      <button type="submit" class="btn btn-danger w-100 fw-semibold">
-        Login
-      </button>
-    </form>
-
-    <p class="text-center mt-3" style="max-width: 400px;">
-      Belum punya akun?
-      <router-link to="/register" class="text-danger fw-semibold text-decoration-none">
-        Daftar sekarang
-      </router-link>
-    </p>
+  <div class="login-page">
+    <div class="login-box">
+      <h2>Login</h2>
+      <form @submit.prevent="handleLogin">
+        <input v-model="email" type="email" placeholder="Email" required />
+        <input v-model="password" type="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <router-link to="/register">Belum punya akun? Daftar</router-link>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from '@/api/axiosInstance' // gunakan instance agar token otomatis di-manage
+
 export default {
+  name: 'LoginPage',
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      errorMessage: ''
     };
-  },
-  mounted() {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      this.$router.push('/');
-    }
   },
   methods: {
-    async login() {
-  if (!this.email || !this.password) {
-    alert('Mohon isi email dan password.');
-    return;
-  }
+    async handleLogin() {
+      try {
+        const res = await axios.post('/auth/login', {
+          email: this.email,
+          password: this.password
+        });
 
-  // ✅ Admin hardcoded
-  if (this.email === 'admin@gmail.com' && this.password === 'Adminsatu') {
-    const adminPayload = {
-      email: 'admin@gmail.com',
-      role: 'ADMIN',
-      username: 'Admin'
-    };
-    const fakeToken = `fake.${btoa(JSON.stringify(adminPayload))}.signature`;
+        // Simpan token dan data user
+        const token = res.data.token;
+        const role = res.data.role || 'BUYER'; // fallback jika tidak tersedia
+        const userId = res.data.userId || res.data.id;
+        const username = res.data.username || res.data.nama || res.data.name || 'User';
 
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('token', fakeToken);
-    localStorage.setItem('userRole', 'ADMIN');
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role.toUpperCase());
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('username', username);
 
-    alert('Login sebagai admin berhasil!');
-    this.$router.push('/admin');
-    return;
-  }
+        // Arahkan ke halaman sesuai role
+        if (role.toUpperCase() === 'ADMIN') {
+          this.$router.push('/admin');
+        } else {
+          this.$router.push('/');
+        }
 
-  // ✅ Login dari backend untuk user biasa
-  const payload = {
-    email: this.email,
-    password: this.password
-  };
-
-  try {
-    const response = await fetch('http://localhost:8081/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const token = await response.text();
-    if (!response.ok) {
-      throw new Error('Email atau password salah.');
+      } catch (err) {
+        console.error('Login error:', err);
+        this.errorMessage = 'Login gagal. Cek email dan password Anda.';
+      }
     }
-
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('token', token);
-
-    // ✅ Decode token untuk ambil role & buyerId
-    const payloadBase64 = token.split('.')[1];
-    const decoded = JSON.parse(atob(payloadBase64));
-    const role = decoded.role || 'BUYER';
-
-    // ⬅️ Ambil dan simpan buyerId (nama field sesuaikan dengan token JWT dari backend kamu)
-    const buyerId = decoded.buyerId || decoded.id || decoded.userId;
-
-    localStorage.setItem('userRole', role);
-    localStorage.setItem('buyerId', buyerId); // ⬅️ LANGKAH PENTING
-
-    alert('Login berhasil!');
-    this.$router.push(role === 'ADMIN' ? '/admin' : '/');
-  } catch (error) {
-    alert(`Login gagal: ${error.message}`);
   }
-}
-
-}};
+};
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
-
-body {
-  margin: 0;
-  font-family: Poppins;
-  background-color: #f8f9fa;
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  background-color: #f9f9f9;
 }
 
-h2 {
-  font-family: 'Playfair Display', serif;
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
-.form-label {
-  font-weight: 600;
+.login-box h2 {
+  margin-bottom: 1.5rem;
+  color: #45000D;
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.login-box button {
+  width: 100%;
+  background-color: #45000D;
+  color: white;
+  padding: 10px;
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.login-box button:hover {
+  background-color: #700014;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 </style>

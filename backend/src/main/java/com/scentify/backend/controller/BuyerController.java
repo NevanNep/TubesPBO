@@ -1,6 +1,9 @@
 package com.scentify.backend.controller;
 
+import com.scentify.backend.dto.CartItemDTO;
+import com.scentify.backend.dto.CheckoutRequestDTO;
 import com.scentify.backend.model.Buyer;
+import com.scentify.backend.model.Order;
 import com.scentify.backend.service.BuyerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/buyer")
-@CrossOrigin(origins = "http://localhost:8081")
 public class BuyerController {
 
     private final BuyerService buyerService;
@@ -18,11 +20,11 @@ public class BuyerController {
         this.buyerService = buyerService;
     }
 
-    // Endpoint untuk registrasi buyer baru dengan penanganan error
+    // ✅ Register buyer baru
     @PostMapping("/register")
     public ResponseEntity<?> registerBuyer(@RequestBody Buyer buyer) {
         try {
-            buyer.setRole("BUYER"); // Set paksa role buyer
+            buyer.setRole("BUYER");
             Buyer savedBuyer = buyerService.saveBuyer(buyer);
             return ResponseEntity.ok(savedBuyer);
         } catch (RuntimeException e) {
@@ -30,8 +32,7 @@ public class BuyerController {
         }
     }
 
-
-    // Ambil data buyer berdasarkan id, response 404 jika tidak ditemukan
+    // ✅ Ambil data buyer by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getBuyerById(@PathVariable Long id) {
         return buyerService.getBuyerById(id)
@@ -39,54 +40,26 @@ public class BuyerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Tambah produk ke cart buyer dengan validasi stok dan error handling
-    @PostMapping("/{buyerId}/cart/{productId}")
-    public ResponseEntity<?> addToCart(
-            @PathVariable Long buyerId,
-            @PathVariable String productId,
-            @RequestParam int quantity
-    ) {
-        try {
-            String result = buyerService.addToCart(buyerId, productId, quantity);
-            return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // Ambil isi cart buyer
+    // ✅ Ambil isi cart buyer (dengan detail produk + qty)
     @GetMapping("/{buyerId}/cart")
-    public ResponseEntity<List<String>> getCart(@PathVariable Long buyerId) {
-        List<String> cart = buyerService.getCartByBuyerId(buyerId);
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<List<CartItemDTO>> getCartItems(@PathVariable Long buyerId) {
+        List<CartItemDTO> cartItems = buyerService.getCartItemsWithDetails(buyerId);
+        return ResponseEntity.ok(cartItems);
     }
 
-    // Update jumlah produk di cart buyer, bisa tambah atau kurang dengan validasi
-    @PutMapping("/{buyerId}/cart/{productId}")
-    public ResponseEntity<?> updateCartItemQuantity(
-            @PathVariable Long buyerId,
-            @PathVariable String productId,
-            @RequestParam int quantity
-    ) {
+    // ✅ Checkout (pakai DTO dan kembalikan Order)
+    @PostMapping("/{buyerId}/order")
+    public ResponseEntity<?> placeOrder(@PathVariable Long buyerId, @RequestBody CheckoutRequestDTO req) {
         try {
-            String result = buyerService.updateCartItemQuantity(buyerId, productId, quantity);
-            return ResponseEntity.ok(result);
+            Order order = buyerService.placeOrder(buyerId, req.getMethod());
+            return ResponseEntity.ok(order);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    // **Endpoint DELETE untuk menghapus produk dari cart buyer**
-    @DeleteMapping("/{buyerId}/cart/{productId}")
-    public ResponseEntity<?> removeFromCart(
-            @PathVariable Long buyerId,
-            @PathVariable String productId
-    ) {
-        try {
-            String result = buyerService.removeFromCart(buyerId, productId);
-            return ResponseEntity.ok(result);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/{buyerId}/orders")
+    public ResponseEntity<?> getOrderHistory(@PathVariable Long buyerId) {
+        return ResponseEntity.ok(buyerService.getOrderHistory(buyerId));
     }
+
 }

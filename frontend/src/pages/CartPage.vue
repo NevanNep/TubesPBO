@@ -1,9 +1,11 @@
 <template>
   <div class="cart-page">
     <h2>Keranjang Belanja</h2>
+
     <div v-if="!Array.isArray(cart) || cart.length === 0">
       <p>Keranjang kamu kosong.</p>
     </div>
+
     <div v-else class="cart-list">
       <div v-for="item in cart" :key="item.productId" class="cart-item">
         <img :src="resolveImage(item.image)" :alt="item.name" class="item-image" />
@@ -22,8 +24,10 @@
           <button @click="removeItem(item.productId)">Hapus</button>
         </div>
       </div>
+
       <hr />
       <h3>Total: Rp {{ totalPrice.toLocaleString('id-ID') }}</h3>
+
       <button class="checkout-btn" @click="checkout">Bayar Sekarang</button>
     </div>
   </div>
@@ -56,7 +60,6 @@ export default {
 
     try {
       const data = await getCart(buyerId)
-      console.log('Cart response:', data) // 🔍 debugging
       this.cart = Array.isArray(data) ? data : []
     } catch (err) {
       console.error('Gagal mengambil data keranjang:', err)
@@ -111,6 +114,7 @@ export default {
   max-width: 800px;
   margin: auto;
   padding: 2rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .cart-list {
@@ -126,6 +130,7 @@ export default {
   padding: 1rem;
   border: 1px solid #eee;
   border-radius: 10px;
+  background: #fff;
 }
 
 .item-image {
@@ -142,6 +147,7 @@ export default {
 .quantity-control input {
   width: 60px;
   padding: 4px;
+  margin-left: 10px;
 }
 
 .checkout-btn {

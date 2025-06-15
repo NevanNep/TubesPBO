@@ -51,6 +51,14 @@
           <p>Dipilih: {{ cart.length }} produk</p>
           <p><strong>Subtotal:</strong> Rp {{ totalPrice.toLocaleString('id-ID') }}</p>
         </div>
+        <div class="payment-select">
+  <label for="payment-method">Pilih Metode Pembayaran:</label>
+  <select id="payment-method" v-model="selectedMethod">
+    <option disabled value="">-- Pilih Metode --</option>
+    <option v-for="method in paymentMethods" :key="method" :value="method">{{ method }}</option>
+  </select>
+</div>
+
         <button class="checkout-btn" @click="checkout">Checkout</button>
       </div>
     </div>
@@ -65,7 +73,9 @@ export default {
   name: 'CartPage',
   data() {
     return {
-      cart: []
+      cart: [],
+      paymentMethods: ['Transfer Bank', 'QRIS', 'E-wallet', 'COD'],
+      selectedMethod: '',
     }
   },
   computed: {
@@ -117,8 +127,11 @@ export default {
       const buyerId = localStorage.getItem('userId')
       if (!buyerId) return alert('Login terlebih dahulu')
 
-      const method = prompt('Masukkan metode pembayaran (misal: VISA)')
-      if (!method) return
+      if (!this.selectedMethod) {
+       return alert('Silakan pilih metode pembayaran terlebih dahulu')
+}
+const method = this.selectedMethod
+
 
       try {
         await placeOrder(buyerId, method)
@@ -241,4 +254,16 @@ export default {
 .checkout-btn:hover {
   background-color: #700014;
 }
+.payment-select {
+  margin-bottom: 1rem;
+}
+
+.payment-select select {
+  padding: 8px;
+  font-size: 16px;
+  margin-top: 5px;
+  width: 100%;
+  max-width: 300px;
+}
+
 </style>

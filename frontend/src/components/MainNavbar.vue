@@ -7,12 +7,9 @@
       </router-link>
 
       <!-- Menu Tengah -->
-      <nav class="navbar-center">
-        <a href="#shop-by-categories">SHOP BY CATEGORIES</a>
-        <a href="#best-seller">BEST SELLER</a>
       <nav class="navbar-menu">
-        <router-link to="/category/Men">SHOP BY CATEGORIES</router-link>
-        <router-link to="#">BEST SELLER</router-link>
+        <a href="#" @click.prevent="scrollToShopByCategories">SHOP BY CATEGORIES</a>
+        <a href="#" @click.prevent="scrollToBestSeller">BEST SELLER</a>
         <router-link to="#">BLOG</router-link>
         <router-link to="#">GIFT</router-link>
         <router-link to="/products">PRODUCT</router-link>
@@ -87,6 +84,37 @@ const checkLogin = () => {
 watchEffect(() => {
   checkLogin()
 })
+
+// Scroll ShopByCategories
+const scrollToShopByCategories = () => {
+  const el = document.getElementById("shop-by-categories")
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push('/').then(() => {
+      setTimeout(() => {
+        const el = document.getElementById("shop-by-categories")
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
+    })
+  }
+}
+
+// Scroll BestSeller
+const scrollToBestSeller = () => {
+  const el = document.getElementById("best-seller")
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push('/').then(() => {
+      setTimeout(() => {
+        const el = document.getElementById("best-seller")
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
+    })
+  }
+}
+
 
 const logout = () => {
   localStorage.clear()

@@ -23,15 +23,14 @@ export const fetchProductById = async (id) => {
 
 export const fetchProductsByCategory = async (category) => {
   try {
-    const res = await axios.get('/products', {
-      params: { category }
-    })
+    const res = await axios.get(`/products/category/${category}`)
     return res.data
   } catch (err) {
     console.error(`Error fetching products by category (${category}):`, err)
     throw err
   }
 }
+
 
 export const deleteProductById = async (productId) => {
   try {

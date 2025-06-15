@@ -13,5 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p FROM Product p LEFT JOIN OrderItem oi ON p.productId = oi.product.productId " +
        "GROUP BY p.productId ORDER BY SUM(oi.quantity) DESC")
     List<Product> findTopSellingProducts(Pageable pageable);
-
+    List<Product> findByCategoryIgnoreCase(String category);
 }

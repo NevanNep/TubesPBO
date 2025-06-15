@@ -27,6 +27,7 @@
     <!-- Best Seller Section -->
     <section class="best-seller">
       <div class="best-seller-header">
+        <section id="best-seller" class="best-seller"></section>
         <h2 class="section-title">Best Seller</h2>
         <div class="slider-buttons">
           <button @click="scrollLeft" aria-label="Scroll Left">&#10094;</button>

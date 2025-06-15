@@ -28,9 +28,8 @@ const routes = [
   { path: '/profile', component: ProfilePage },
   {
     path: '/category/:category',
-    name: 'CategoryPage',
-    component: CategoryPage,
-    props: true
+    name: 'CategoryPage', // <== ini penting!
+    component: CategoryPage 
   },
   {
     path: '/product/:id',

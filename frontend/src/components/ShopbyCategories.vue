@@ -1,26 +1,17 @@
 <template>
   <section id="shop-by-categories" class="shop-by-categories">
     <div class="category-cards">
-      <div
-        class="category-card"
-        @click="goToCategory('Men')"
-      >
+      <div class="category-card" @click="goToCategory('Men')">
         <img src="@/assets/men2.jpg" alt="Men Category" />
         <span>Men</span>
       </div>
 
-      <div
-        class="category-card"
-        @click="goToCategory('Women')"
-      >
+      <div class="category-card" @click="goToCategory('Women')">
         <img src="@/assets/women2.jpg" alt="Women Category" />
         <span>Women</span>
       </div>
 
-      <div
-        class="category-card"
-        @click="goToCategory('Unisex')"
-      >
+      <div class="category-card" @click="goToCategory('Unisex')">
         <img src="@/assets/couple1.jpg" alt="Unisex Category" />
         <span>Unisex</span>
       </div>
@@ -33,9 +24,9 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToCategory = (category) => {
-  // route ke halaman produk berdasarkan kategori
-  router.push({ name: 'CategoryProduct', params: { category } })
+  router.push({ name: 'CategoryPage', params: { category } }) // ✅ gunakan parameter dinamis
 }
+
 </script>
 
 <style scoped>

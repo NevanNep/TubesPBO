@@ -28,15 +28,16 @@ const products = ref([])
 
 const loadProducts = async () => {
   try {
-    products.value = await fetchProductsByCategory(category.value)
+    const response = await fetchProductsByCategory(category.value)
+    products.value = response
   } catch (err) {
     console.error('Gagal mengambil produk kategori:', err)
   }
 }
 
+
 onMounted(loadProducts)
 
-// Jika kategori berubah (navigasi ulang), ambil ulang datanya
 watch(() => route.params.category, (newVal) => {
   category.value = newVal
   loadProducts()

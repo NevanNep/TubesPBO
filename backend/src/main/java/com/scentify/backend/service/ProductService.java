@@ -83,4 +83,8 @@ public class ProductService {
 
         return bestSellers;
     }
+
+    public List<Product> getProductsByCategory(String category) {
+        return productRepository.findByCategoryIgnoreCase(category);
+    }
 }

@@ -58,4 +58,11 @@ public class ProductController {
         List<Product> best = productService.getBestSellers(8);
         return ResponseEntity.ok(best);
     }
+
+    // Kategori
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Product>> getByCategory(@PathVariable String category) {
+        List<Product> filtered = productService.getProductsByCategory(category);
+        return ResponseEntity.ok(filtered);
+}
 }

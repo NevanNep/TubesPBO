@@ -93,8 +93,9 @@ const handleAddToCart = async (product) => {
 }
 
 const resolveImage = (image) => {
-  if (!image) return '/images/default.jpg'
-  return image.startsWith('http') ? image : `/images/${image}`
+  if (!image || typeof image !== 'string') return '/images/default.jpg'
+  if (image.startsWith('http') || image.startsWith('/')) return image
+  return `/images/${image}`
 }
 
 const calculateDiscount = (product) => {

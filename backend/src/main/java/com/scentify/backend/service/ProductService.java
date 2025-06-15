@@ -2,8 +2,10 @@ package com.scentify.backend.service;
 
 import com.scentify.backend.model.Product;
 import com.scentify.backend.repository.ProductRepository;
+import com.scentify.backend.repository.OrderItemRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +13,11 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
     // Ambil semua produk
@@ -28,12 +32,11 @@ public class ProductService {
 
     // Tambah produk baru
     public Product createProduct(Product product) {
-        // Validasi sederhana (misal: default jika kosong)
         if (product.getName() == null || product.getName().isEmpty()) {
             product.setName("Unnamed Product");
         }
         if (product.getRating() == 0) {
-            product.setRating(5); // default rating
+            product.setRating(5);
         }
         return productRepository.save(product);
     }
@@ -65,5 +68,19 @@ public class ProductService {
         } else {
             return false;
         }
+    }
+
+    // Ambil produk terlaris berdasarkan kuantitas order_items
+    public List<Product> getBestSellers(int limit) {
+        List<Object[]> results = orderItemRepository.findTopSellingProducts();
+        List<Product> bestSellers = new ArrayList<>();
+
+        for (Object[] row : results) {
+            String productId = (String) row[0];
+            productRepository.findById(productId).ifPresent(bestSellers::add);
+            if (bestSellers.size() >= limit) break;
+        }
+
+        return bestSellers;
     }
 }

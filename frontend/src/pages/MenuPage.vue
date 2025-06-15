@@ -5,13 +5,22 @@
 
     <!-- Best Deals Section -->
     <section class="best-deals">
-      <h2 class="section-title">Best Deals</h2>
-      <div class="best-grid">
-        <ProductCard
-          v-for="item in bestDeals"
-          :key="item.id"
-          :product="item"
-        />
+      <div class="best-deals-header">
+        <h2 class="section-title">Best Deals</h2>
+        <div class="slider-buttons">
+          <button @click="scrollLeftDeals" aria-label="Scroll Left">&#10094;</button>
+          <button @click="scrollRightDeals" aria-label="Scroll Right">&#10095;</button>
+        </div>
+      </div>
+
+      <div class="best-deals-wrapper">
+        <div class="best-deals-grid" ref="bestDealsScroll">
+          <ProductCard
+            v-for="item in bestDeals"
+            :key="item.productId"
+            :product="item"
+          />
+        </div>
       </div>
     </section>
 
@@ -20,12 +29,8 @@
       <div class="best-seller-header">
         <h2 class="section-title">Best Seller</h2>
         <div class="slider-buttons">
-          <button @click="scrollLeft" aria-label="Scroll Left">
-            &#10094;
-          </button>
-          <button @click="scrollRight" aria-label="Scroll Right">
-            &#10095;
-          </button>
+          <button @click="scrollLeft" aria-label="Scroll Left">&#10094;</button>
+          <button @click="scrollRight" aria-label="Scroll Right">&#10095;</button>
         </div>
       </div>
 
@@ -33,14 +38,14 @@
         <div class="best-seller-grid" ref="bestSellerScroll">
           <ProductCard
             v-for="item in topSellers"
-            :key="item.id"
+            :key="item.productId"
             :product="item"
           />
         </div>
       </div>
 
       <button class="lihat-produk-btn" @click="lihatProduk">
-        Lihat Produk
+        Lihat Semua Produk
       </button>
     </section>
 
@@ -54,48 +59,44 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/api/axiosInstance'
 import HeroBanner from '@/components/HeroBanner.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import ShopByCategories from '@/components/ShopbyCategories.vue'
 
-const allProducts = ref([])
 const bestDeals = ref([])
 const topSellers = ref([])
 
+const bestDealsScroll = ref(null)
+const bestSellerScroll = ref(null)
+
 onMounted(async () => {
   try {
-    const { data } = await axios.get('http://localhost:8081/api/products')
-    allProducts.value = data
-
-    // Filter diskon besar
-    bestDeals.value = data
-      .filter((p) => p.discount >= 20)
+    const { data: all } = await axios.get('/products')
+    bestDeals.value = all
+      .filter(p => p.discount >= 20)
       .sort((a, b) => b.discount - a.discount)
       .slice(0, 8)
 
-    // Filter produk terjual terbanyak
-    topSellers.value = data
-      .filter((p) => p.sold) // pastikan ada field sold
-      .sort((a, b) => b.sold - a.sold)
-      .slice(0, 8)
-  } catch (error) {
-    console.error('Gagal mengambil produk:', error)
+    const { data: bestSellerData } = await axios.get('/products/bestsellers')
+    topSellers.value = bestSellerData
+  } catch (err) {
+    console.error('Gagal mengambil produk:', err)
   }
 })
 
 const scrollLeft = () => {
-  document.querySelector('.best-seller-grid').scrollBy({
-    left: -300,
-    behavior: 'smooth'
-  })
+  bestSellerScroll.value?.scrollBy({ left: -300, behavior: 'smooth' })
+}
+const scrollRight = () => {
+  bestSellerScroll.value?.scrollBy({ left: 300, behavior: 'smooth' })
 }
 
-const scrollRight = () => {
-  document.querySelector('.best-seller-grid').scrollBy({
-    left: 300,
-    behavior: 'smooth'
-  })
+const scrollLeftDeals = () => {
+  bestDealsScroll.value?.scrollBy({ left: -300, behavior: 'smooth' })
+}
+const scrollRightDeals = () => {
+  bestDealsScroll.value?.scrollBy({ left: 300, behavior: 'smooth' })
 }
 
 const lihatProduk = () => {
@@ -107,7 +108,7 @@ const lihatProduk = () => {
 .menu-page {
   font-family: 'Poppins', sans-serif;
   padding: 2rem;
-  background: #fff;
+  background: #f8f8f8;
 }
 
 .section-title {
@@ -122,10 +123,22 @@ const lihatProduk = () => {
   margin: 3rem 0;
 }
 
-.best-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
+.best-deals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.best-deals-wrapper {
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.best-deals-grid {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
 }
 
 .best-seller {

@@ -34,6 +34,7 @@
         <div class="rating">
           <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= product.rating }">★</span>
         </div>
+        <!-- Ikon cart sebagai tombol -->
         <button 
           class="cart-btn" 
           @click.stop="addToCart"
@@ -93,7 +94,7 @@ export default {
   methods: {
     async addToCart() {
       const buyerId = localStorage.getItem('userId');
-      if (!buyerId || !this.product?.id) {
+      if (!buyerId || !this.product?.productId) {
         this.$toast?.error?.('Anda harus login sebagai buyer untuk menambahkan produk ke keranjang.');
         return;
       }
@@ -104,7 +105,7 @@ export default {
       }
 
       try {
-        await addToCart(Number(buyerId), this.product.id, this.quantity);
+        await addToCart(Number(buyerId), this.product.productId, this.quantity);
         this.$toast?.success?.(`${this.product.name} berhasil ditambahkan ke keranjang.`);
       } catch (err) {
         this.$toast?.error?.('Gagal menambahkan produk ke keranjang.');
@@ -112,10 +113,10 @@ export default {
       }
     },
     goToDetail() {
-      if (this.product?.id != null) {
+      if (this.product?.productId != null) {
         this.$router.push({
           name: 'ProductDetail',
-          params: { id: this.product.id },
+          params: { id: this.product.productId },
         });
       }
     }
@@ -124,5 +125,5 @@ export default {
 </script>
 
 <style scoped>
-/* ... Tetap sama, tidak diubah ... */
+/* Tetap gunakan style CSS milikmu yang sebelumnya */
 </style>

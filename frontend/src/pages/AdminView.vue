@@ -11,15 +11,13 @@
     </div>
 
     <div class="product-grid">
-      <div v-for="product in products" :key="product.productId" class="product-box">
-        <img :src="product.image" :alt="product.name" />
-        <h3>{{ product.name }}</h3>
-        <p>Rp {{ product.price.toLocaleString('id-ID') }}</p>
-        <div class="actions">
-          <router-link :to="`/admin/edit/${product.productId}`" class="btn">Edit</router-link>
-          <button @click="deleteProduct(product.productId)">Hapus</button>
-        </div>
-      </div>
+      <ProductCard
+        v-for="product in products"
+        :key="product.productId"
+        :product="product"
+        :isAdmin="true"
+        @delete-product="deleteProduct"
+      />
     </div>
   </div>
 </template>
@@ -27,6 +25,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { fetchAllProducts, deleteProductById } from '@/api/productApi'
+import ProductCard from '@/components/ProductCard.vue' // pastikan path-nya sesuai
 
 const products = ref([])
 
@@ -78,37 +77,6 @@ onMounted(loadProducts)
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-}
-
-.product-box {
-  width: 220px;
-  border: 1px solid #eee;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  background: white;
-}
-
-.product-box img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  margin-bottom: 1rem;
-}
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.btn {
-  background: #700014;
-  color: white;
-  padding: 6px;
-  border-radius: 6px;
-  text-decoration: none;
-  text-align: center;
+  justify-content: flex-start;
 }
 </style>

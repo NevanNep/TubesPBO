@@ -51,4 +51,11 @@ public class ProductController {
         boolean isDeleted = productService.deleteProduct(id);
         return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
+
+    // Ambil produk terlaris
+    @GetMapping("/bestsellers")
+    public ResponseEntity<List<Product>> getBestSellers() {
+        List<Product> best = productService.getBestSellers(8);
+        return ResponseEntity.ok(best);
+    }
 }

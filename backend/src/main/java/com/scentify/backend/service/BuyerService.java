@@ -72,11 +72,17 @@ public class BuyerService {
             Product product = productRepo.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Produk tidak ditemukan: " + productId));
 
+            // ✅ Perhitungan harga diskon diterapkan di sini
+            double price = product.getPrice();
+            if (product.getDiscount() > 0) {
+                price = Math.round(product.getPrice() * (1 - product.getDiscount() / 100.0));
+            }
+
             cartItems.add(new CartItemDTO(
                     product.getProductId(),
                     product.getName(),
                     product.getImage(),
-                    product.getPrice(),
+                    price,
                     quantity
             ));
         }

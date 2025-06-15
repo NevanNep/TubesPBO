@@ -30,11 +30,17 @@
         </div>
       </div>
 
-      <div class="rating-cart-wrapper">
+      <!-- ADMIN MODE -->
+      <div v-if="isAdmin" class="admin-actions">
+       <router-link :to="`/admin/edit/${product.productId}`" class="btn">Edit</router-link>
+       <button class="btn danger" @click="deleteProduct">Hapus</button>
+      </div>
+
+      <!-- BUYER MODE -->
+      <div v-else class="rating-cart-wrapper">
         <div class="rating">
           <span v-for="n in 5" :key="n" class="star" :class="{ filled: n <= product.rating }">★</span>
         </div>
-        <!-- Ikon cart sebagai tombol -->
         <button 
           class="cart-btn" 
           @click.stop="addToCart"
@@ -71,6 +77,10 @@ export default {
     quantity: {
       type: Number,
       default: 1
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -112,6 +122,9 @@ export default {
         console.error('Cart error:', err);
       }
     },
+    deleteProduct() {
+      this.$emit('delete-product', this.product.productId);
+    },
     goToDetail() {
       if (this.product?.productId != null) {
         this.$router.push({
@@ -125,5 +138,179 @@ export default {
 </script>
 
 <style scoped>
-/* Tetap gunakan style CSS milikmu yang sebelumnya */
+.product-card {
+  width: 220px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+  font-family: Poppins;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #b71c1c;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 8px 3px;
+  z-index: 2;
+}
+
+.image-container {
+  position: relative;
+  text-align: center;
+  padding: 40px;
+}
+
+.product-image {
+  max-height: 120px;
+  object-fit: contain;
+  transform: scale(1.6); /* zoom 10% */
+}
+
+.quick-view {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #45000D;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.product-content {
+  padding: 12px;
+  flex: 1;
+}
+
+.brand {
+  font-size: 13px;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 4px;
+}
+
+.product-name {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-info {
+  margin-bottom: 8px;
+}
+
+.price {
+  display: flex;
+  flex-direction: column;
+}
+
+.original {
+  font-size: 13px;
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.final-price {
+  font-size: 15px;
+  font-weight: bold;
+  color: #750016;
+}
+
+.final-price.no-discount {
+  margin-top: 4px;
+}
+
+.rating-cart-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.rating .star {
+  color: #ccc;
+  font-size: 16px;
+}
+
+.rating .star.filled {
+  color: #EBC58A;
+}
+
+.cart-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.cart-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cart-icon {
+  color: #750016;
+}
+
+.divider {
+  height: 4px;
+  background-color: #45000D;
+  margin: 10px 0 6px;
+  border-radius: 2px;
+}
+
+.stock {
+  font-size: 12px;
+  color: #999;
+}
+
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 6px;
+  background: #8D8C8A;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #4B4B4A;
+  color: white;
+}
+
+.btn.danger {
+  background: #45000D;
+}
+
+.btn.danger:hover {
+  background: #700014;
+  color: white;
+}
+
 </style>

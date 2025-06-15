@@ -110,7 +110,7 @@ export default {
 }
 
 .error {
-  color: red;
+  color: #700014;
   margin-top: 1rem;
   font-size: 0.9rem;
 }

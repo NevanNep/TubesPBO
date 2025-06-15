@@ -1,8 +1,10 @@
 <template>
   <header class="navbar">
     <div class="navbar-container">
-      <!-- Logo -->
-      <router-link to="/" class="logo">SCENTIFY</router-link>
+      <!-- Logo Gambar -->
+      <router-link to="/" class="logo">
+        <img src="/newnew.png" alt="Scentify Logo" class="logo-img" />
+      </router-link>
 
       <!-- Menu Tengah -->
       <nav class="navbar-center">
@@ -29,23 +31,33 @@
 
       <!-- Ikon Kanan -->
       <div class="navbar-icons">
-        <button aria-label="Search"><i class="fas fa-search"></i></button>
+        <!-- Search -->
+        <button aria-label="Search" class="icon-button">
+          <MagnifyingGlassIcon class="icon" />
+        </button>
 
-        <router-link v-if="isLoggedIn" to="/profile" aria-label="User">
-          <i class="fas fa-user"></i>
+        <!-- Profile -->
+        <router-link v-if="isLoggedIn" to="/profile" aria-label="User" class="icon-button">
+          <UserIcon class="icon" />
         </router-link>
 
-        <router-link v-if="isLoggedIn" to="/cart" aria-label="Cart">
-          <i class="fas fa-shopping-cart"></i>
+        <!-- Cart -->
+        <router-link v-if="isLoggedIn" to="/cart" aria-label="Cart" class="icon-button">
+          <ShoppingCartIcon class="icon" />
         </router-link>
 
-        <!-- ✅ Tambahan: Riwayat hanya untuk buyer -->
-        <router-link v-if="isBuyer" to="/history" aria-label="Riwayat">
-          <i class="fas fa-clock"></i>
+        <!-- Riwayat (Buyer Only) -->
+        <router-link v-if="isBuyer" to="/history" aria-label="Riwayat" class="icon-button">
+          <ClockIcon class="icon" />
         </router-link>
 
-        <button v-if="isLoggedIn" @click="logout" class="logout-btn">Logout</button>
-        <router-link v-else to="/login" class="login-btn">Login</router-link>
+        <!-- Login/Register / Logout -->
+        <template v-if="isLoggedIn">
+          <button @click="logout" class="logout-btn">Logout</button>
+        </template>
+        <template v-else>
+          <router-link to="/login" class="login-btn">Login / Register</router-link>
+        </template>
       </div>
     </div>
   </header>
@@ -54,6 +66,9 @@
 <script setup>
 import { ref, onMounted, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+
+// Import Heroicons
+import { MagnifyingGlassIcon, UserIcon, ShoppingCartIcon, ClockIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const isLoggedIn = ref(false)
@@ -69,7 +84,6 @@ const checkLogin = () => {
   isBuyer.value = role.toUpperCase() === 'BUYER'
 }
 
-// Supaya auto update saat localStorage berubah
 watchEffect(() => {
   checkLogin()
 })
@@ -98,8 +112,6 @@ onMounted(() => {
 }
 
 .navbar-container {
-  max-width: 1440px;
-  margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -108,11 +120,14 @@ onMounted(() => {
 
 /* Logo */
 .logo {
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: #F7E7CE;
-  text-decoration: none;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+.logo-img {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* Menu Tengah */
@@ -121,19 +136,17 @@ onMounted(() => {
   flex: 1;
   justify-content: center;
   gap: 2rem;
-  position: relative;
 }
 
 .navbar-menu a {
-  color: #F7E7CE;
+  color: #ffffff;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-decoration: none;
   transition: color 0.3s ease;
 }
-
 .navbar-menu a:hover {
-  color: #ffffff;
+  color: #F7E7CE;
 }
 
 /* Dropdown Admin */
@@ -144,11 +157,9 @@ onMounted(() => {
   font-size: 0.95rem;
   cursor: pointer;
 }
-
 .admin-label:hover {
   color: #ffffff;
 }
-
 .admin-menu {
   position: absolute;
   top: 30px;
@@ -162,13 +173,11 @@ onMounted(() => {
   border-radius: 6px;
   z-index: 99;
 }
-
 .admin-menu a {
   text-decoration: none;
   color: #45000D;
   font-weight: 500;
 }
-
 .admin-menu a:hover {
   color: #700014;
 }
@@ -178,29 +187,56 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  margin-left: auto;
+  padding-left: 23rem;
 }
-
-.navbar-icons i {
-  font-size: 1.1rem;
-  color: #F7E7CE;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.navbar-icons i:hover {
-  color: #ffffff;
-  transform: scale(1.2);
-}
-
-.navbar-icons button {
+.icon-button {
   background: none;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  color: #F7E7CE;
-  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+.icon {
+  width: 22px;
+  height: 22px;
+  stroke: #ffffff;
+  transition: stroke 0.3s ease, transform 0.2s ease;
+}
+.icon-button:hover .icon {
+  stroke: #F7E7CE;
+  transform: scale(1.15);
 }
 
-.navbar-icons button:hover {
+/* Login / Register Button */
+.login-btn {
+  background-color: #F7E7CE;
+  color: #45000D;
+  padding: 6px 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+.login-btn:hover {
+  background-color: #ffffff;
+  color: #700014;
+}
+
+/* Logout */
+.logout-btn {
+  background-color: transparent;
   color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.logout-btn:hover {
+  background-color: #F7E7CE;
+  color: #45000D;
 }
 </style>
